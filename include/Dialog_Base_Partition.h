@@ -28,7 +28,7 @@
 #include <gtkmm/spinbutton.h>
 #include <gtkmm/table.h>
 #include <gtkmm/box.h>
-#include <gtkmm/tooltips.h>
+#include <gtkmm/tooltip.h>
 #include <gtkmm/optionmenu.h>
 
 namespace GParted

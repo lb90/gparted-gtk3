@@ -30,7 +30,6 @@ DialogManageFlags::DialogManageFlags( const Partition & partition, std::map<Glib
 	any_change = false ;
 
 	set_title( String::ucompose( _("Manage flags on %1"), partition .get_path() ) );
-	set_has_separator( false ) ;
 	set_resizable( false ) ;
 
 	Glib::ustring str_temp = "<span weight=\"bold\" size=\"larger\">" ;
@@ -75,7 +74,7 @@ void DialogManageFlags::load_treeview()
 
 void DialogManageFlags::on_flag_toggled( const Glib::ustring & path ) 
 {
-	get_window() ->set_cursor( Gdk::Cursor( Gdk::WATCH ) ) ;
+	get_window() ->set_cursor( Gdk::Cursor::create( Gdk::WATCH ) ) ;
 	set_sensitive( false ) ;
 	while ( Gtk::Main::events_pending() )
 		Gtk::Main::iteration() ;
