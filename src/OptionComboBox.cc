@@ -24,11 +24,11 @@ namespace GParted
 OptionComboBox::OptionComboBox()
 {
 	m_model = Gtk::ListStore::create(m_columns);
-	m_combo .set_model( m_model );
+	set_model( m_model );
 
-	m_combo .pack_start( m_cellrenderer );
-	m_combo .add_attribute( m_cellrenderer, "text",      m_columns.m_col_text );
-	m_combo .add_attribute( m_cellrenderer, "sensitive", m_columns.m_col_sensitive );
+	pack_start( m_cellrenderer );
+	add_attribute( m_cellrenderer, "text",      m_columns.m_col_text );
+	add_attribute( m_cellrenderer, "sensitive", m_columns.m_col_sensitive );
 }
 
 OptionComboBox::~OptionComboBox()
@@ -39,7 +39,7 @@ Glib::ustring OptionComboBox::get_active_text()
 {
 	Glib::ustring text;
 
-	Gtk::TreeModel::const_iterator iter = m_combo.get_active();
+	Gtk::TreeModel::const_iterator iter = get_active();
 	if ( iter )
 	{
 		Gtk::TreeModel::Row row = *iter;

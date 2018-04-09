@@ -30,6 +30,7 @@ namespace GParted
 {
 
 class OptionComboBox
+ : public Gtk::ComboBox
 {
 public:
 	class Row
@@ -80,7 +81,6 @@ private:
 	ModelColumns                   m_columns;
 	Glib::RefPtr<Gtk::ListStore>   m_model;
 	Gtk::CellRendererText          m_cellrenderer;
-	Gtk::ComboBox                  m_combo;
 };
 
 }//GParted
