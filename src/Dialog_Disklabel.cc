@@ -28,7 +28,6 @@ Dialog_Disklabel::Dialog_Disklabel( const Device & device )
 
 	/*TO TRANSLATORS: dialogtitle, looks like Create partition table on /dev/hda */
 	this ->set_title( String::ucompose( _("Create partition table on %1"), device_path ) );
-	this ->set_has_separator( false ) ;
 	this ->set_resizable( false );
 
 	{
@@ -77,7 +76,7 @@ Dialog_Disklabel::Dialog_Disklabel( const Device & device )
 		bool set_active = false ;
 		for ( unsigned int t = 0 ; t < labeltypes .size() ; t ++ )
 		{
-			combo_labeltypes .append_text( labeltypes[ t ] ) ;
+			combo_labeltypes .append( labeltypes[ t ] ) ;
 			if ( default_label == labeltypes[ t ] )
 			{
 				combo_labeltypes .set_active( t ) ;
