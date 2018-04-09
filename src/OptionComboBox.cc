@@ -14,7 +14,7 @@
  *  along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ComboBox.h"
+#include "OptionComboBox.h"
 
 #include <glibmm/ustring.h>
 
@@ -65,13 +65,12 @@ std::vector<OptionComboBox::Row> OptionComboBox::items()
 	type_children children = m_model->children();
 	
 	for (type_children::iterator it = children.begin();
-	     iter != children.end(); ++it)
+	     it != children.end(); ++it)
 	{
 		/*TODO requires c++11 */
 		rows.emplace_back(this, it);
 	}
-	
-	/*TODO only works for c++11 thanks to move semantics if Row is not copyable */
+
 	return rows;
 }
 
@@ -80,34 +79,48 @@ void OptionComboBox::clear()
 	m_model.clear();
 }
 
-OptionComboBox::Row::Row(OptionComboBox & parent, Gtk::TreeModel::iterator iter)
+OptionComboBox::Row::Row(OptionComboBox *parent, Gtk::TreeModel::iterator iter)
  : m_iter(iter),
    m_parent(parent)
 {
+	/*TODO review: are we allowed to throw? */
+	/*TODO nullptr is c++11 */
+	if (m_parent == nullptr)
+		throw 1;
 }
 
 OptionComboBox::Row::~Row()
 {
 }
 
+OptionComboBox::Row::Row( const Row & row )
+ : m_iter(row.m_iter),
+   m_parent(row.m_parent)
+{
+	/*TODO review: are we allowed to throw? */
+	/*TODO nullptr is c++11 */
+	if (m_parent == nullptr)
+		throw 1;
+}
+
 Glib::ustring OptionComboBox::Row::get_text()
 {
-	return (*iter)[ parent.m_columns.m_col_text ];
+	return (*m_iter)[ m_parent->m_columns.m_col_text ];
 }
 
 void OptionComboBox::Row::set_text(const Glib::ustring& text)
 {
-	(*iter)[ parent.m_columns.m_col_text ] = text;
+	(*m_iter)[ m_parent->m_columns.m_col_text ] = text;
 }
 
 bool OptionComboBox::Row::get_sensitive()
 {
-	return (*iter)[ parent.m_columns.m_col_sensitive ];
+	return (*m_iter)[ m_parent->m_columns.m_col_sensitive ];
 }
 
 void OptionComboBox::Row::set_sensitive(bool sensitive)
 {
-	(*iter)[ parent.m_columns.m_col_sensitive ] = sensitive;
+	(*m_iter)[ m_parent->m_columns.m_col_sensitive ] = sensitive;
 }
 
 }//GParted

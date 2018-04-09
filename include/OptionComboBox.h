@@ -36,22 +36,21 @@ public:
 	class Row
 	{
 	public:
-		Row ( OptionComboBox & parent, Gtk::TreeModel::iterator iter);
+		Row ( OptionComboBox *parent, Gtk::TreeModel::iterator iter);
 		~Row( );
+		Row( const Row & );
+		Row & operator=( const Row & );
 
+		Glib::ustring get_text();
 		void set_text( const Glib::ustring & text );
+		bool get_sensitive();
 		void set_sensitive( bool sensitive );
 
 	private:
-		/*TODO: what about implementing copy?
-		        in that case we should not have a reference to parent,
-		        we should really use a pointer */
-		Row( const Row & );
-		Row & operator=( const Row & );
-	
 		Gtk::TreeModel::iterator m_iter;
-		OptionComboBox& m_parent;
+		OptionComboBox *m_parent;
 	};
+	friend class Row; /* for pre c++11 */
 
 	OptionComboBox();
 	~OptionComboBox();
@@ -60,7 +59,7 @@ public:
 	std::vector< Row > items();
 	void clear();
 	
-	Glib::ustring get_active_text() const;
+	Glib::ustring get_active_text(); /*TODO make const */
 
 private:
 	OptionComboBox( const OptionComboBox & src );              // Not implemented copy constructor
