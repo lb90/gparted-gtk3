@@ -29,7 +29,7 @@
 #include <gtkmm/table.h>
 #include <gtkmm/box.h>
 #include <gtkmm/tooltip.h>
-#include <gtkmm/optionmenu.h>
+#include <gtkmm/comboboxtext.h>
 
 namespace GParted
 {
@@ -72,8 +72,7 @@ protected:
 
 	Gtk::HBox hbox_main ;
 	Gtk::SpinButton spinbutton_before, spinbutton_size, spinbutton_after;
-	Gtk::OptionMenu optionmenu_alignment ;
-	Gtk::Menu menu_alignment ;
+	Gtk::ComboBoxText combotext_alignment ;
 
 	sigc::connection before_change_connection, size_change_connection, after_change_connection ;
 
