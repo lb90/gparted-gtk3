@@ -117,33 +117,53 @@ Dialog_Partition_Info::Dialog_Partition_Info( const Partition & partition ) : pa
 	this ->show_all_children() ;
 }
 
-void Dialog_Partition_Info::drawingarea_on_realize()
+bool Dialog_Partition_Info::drawingarea_on_draw( const Cairo::RefPtr<Cairo::Context>& cr )
 {
-	gc = Gdk::GC::create( drawingarea .get_window() ) ;
-	
-	drawingarea .get_window() ->set_background( color_partition ) ;
-}
+	cr ->set_source_rgb( rgba_partition.get_red(),
+	                     rgba_partition.get_green(),
+	                     rgba_partition.get_blue() );
+	cr ->rectangle(0, 0, 400, 60);
+	cr ->fill();
 
-bool Dialog_Partition_Info::drawingarea_on_expose( GdkEventExpose *ev )
-{
 	if ( partition.filesystem != FS_UNALLOCATED )
 	{
 		//used
-		gc ->set_foreground( color_used );
-		drawingarea .get_window() ->draw_rectangle( gc, true, BORDER, BORDER, used, 44 ) ;
+		cr ->set_source_rgb( rgba_used.get_red(),
+		                     rgba_used.get_green(),
+		                     rgba_used.get_blue() );
+		cr ->rectangle( BORDER,
+		                BORDER,
+		                used,
+		                60 - 2 * BORDER ) ;
+		cr ->fill( );
 		
 		//unused
-		gc ->set_foreground( color_unused );
-		drawingarea .get_window() ->draw_rectangle( gc, true, BORDER + used, BORDER, unused, 44 ) ;
+		cr ->set_source_rgb( rgba_unused.get_red(),
+		                     rgba_unused.get_green(),
+		                     rgba_unused.get_blue() );
+		cr ->rectangle( BORDER + used,
+		                BORDER,
+		                unused,
+		                60 - 2 * BORDER ) ;
+		cr ->fill( );
 
 		//unallocated
-		gc ->set_foreground( color_unallocated );
-		drawingarea .get_window() ->draw_rectangle( gc, true, BORDER + used + unused, BORDER, unallocated, 44 ) ;
+		cr ->set_source_rgb( rgba_unallocated.get_red(),
+		                     rgba_unallocated.get_green(),
+		                     rgba_unallocated.get_blue() );
+		cr ->rectangle( BORDER + used + unused,
+		                BORDER,
+		                unallocated,
+		                60 - 2 * BORDER ) ;
+		cr ->fill( );
 	}
 	
 	//text
-	gc ->set_foreground( color_text );
-	drawingarea .get_window() ->draw_layout( gc, 180, BORDER + 6, pango_layout ) ;
+	cr ->set_source_rgb( rgba_text.get_red(),
+	                     rgba_text.get_green(),
+	                     rgba_text.get_blue() );
+	cr ->move_to( 180, BORDER + 6 ) ; /*TODO*/
+	pango_layout->show_in_cairo_context(cr);
 	
 	return true;
 }
@@ -151,8 +171,7 @@ bool Dialog_Partition_Info::drawingarea_on_expose( GdkEventExpose *ev )
 void Dialog_Partition_Info::init_drawingarea() 
 {
 	drawingarea .set_size_request( 400, 60 ) ;
-	drawingarea .signal_realize().connect( sigc::mem_fun(*this, &Dialog_Partition_Info::drawingarea_on_realize) ) ;
-	drawingarea .signal_expose_event().connect( sigc::mem_fun(*this, &Dialog_Partition_Info::drawingarea_on_expose) ) ;
+	drawingarea .signal_draw().connect( sigc::mem_fun(*this, &Dialog_Partition_Info::drawingarea_on_draw) ) ;
 	
 	frame = manage( new Gtk::Frame() ) ;
 	frame ->add( drawingarea ) ;
@@ -185,20 +204,11 @@ void Dialog_Partition_Info::init_drawingarea()
 	}
 	
 	//allocate some colors
-	color_used.set( "#F8F8BA" );
-	this ->get_colormap() ->alloc_color( color_used ) ;
-	
-	color_unused .set( "white" ) ;
-	this ->get_colormap() ->alloc_color( color_unused ) ;
-
-	color_unallocated .set( "darkgrey" ) ;
-	this ->get_colormap() ->alloc_color( color_unallocated ) ;
-
-	color_text .set( "black" );
-	this ->get_colormap() ->alloc_color( color_text ) ;
-
-	color_partition.set( Utils::get_color( partition.get_filesystem_partition().filesystem ) );
-	this ->get_colormap() ->alloc_color( color_partition ) ;	 
+	rgba_used.set( "#F8F8BA" );
+	rgba_unused .set( "white" ) ;
+	rgba_unallocated .set( "darkgrey" ) ;
+	rgba_text .set( "black" );
+	rgba_partition.set( Utils::get_color( partition.get_filesystem_partition().filesystem ) ); 
 	
 	//set text of pangolayout
 	pango_layout = drawingarea .create_pango_layout( 
@@ -655,10 +665,6 @@ void Dialog_Partition_Info::Display_Info()
 
 Dialog_Partition_Info::~Dialog_Partition_Info()
 {
-	this ->get_colormap() ->free_color( color_used ) ;
-	this ->get_colormap() ->free_color( color_unused ) ;
-	this ->get_colormap() ->free_color( color_text ) ;
-	this ->get_colormap() ->free_color( color_partition ) ;
 }
 
 } //GParted

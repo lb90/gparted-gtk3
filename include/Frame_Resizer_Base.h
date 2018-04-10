@@ -33,8 +33,8 @@ public:
 	Frame_Resizer_Base() ;
 	~Frame_Resizer_Base() ;
 
-	void set_rgb_partition_color( const Gdk::Color & color ) ;
-	void override_default_rgb_unused_color( const Gdk::Color & color ) ;
+	void set_rgb_partition_color( const Gdk::RGBA & rgba ) ;
+	void override_default_rgb_unused_color( const Gdk::RGBA & rgba ) ;
 	
 	void set_x_min_space_before( int x_min_space_before ) ;
 	void set_x_start( int x_start ) ;
@@ -47,7 +47,7 @@ public:
 	int get_x_start() ;
 	int get_x_end() ;
 
-	virtual void Draw_Partition() ;
+	virtual void Draw_Partition( const Cairo::RefPtr<Cairo::Context>& cr ) ;
 
 	//public signals  (emitted upon resize/move)
 	sigc::signal<void,int,int, ArrowType> signal_resize;
@@ -61,20 +61,17 @@ protected:
 
 	//signal handlers
 	void drawingarea_on_realize();
-	bool drawingarea_on_expose( GdkEventExpose * ev );
+	bool drawingarea_on_draw( const Cairo::RefPtr<Cairo::Context>& cr );
 	virtual bool drawingarea_on_mouse_motion( GdkEventMotion * ev ) ;
 	bool drawingarea_on_button_press_event( GdkEventButton * ev ) ;
 	bool drawingarea_on_button_release_event( GdkEventButton * ev ) ;
 	bool drawingarea_on_leave_notify( GdkEventCrossing * ev ) ;
 		
-	void Draw_Resize_Grip( ArrowType ) ;
+	void Draw_Resize_Grip( const Cairo::RefPtr<Cairo::Context>& cr, ArrowType ) ;
 
 	Gtk::DrawingArea drawingarea ;
-	Glib::RefPtr<Gdk::GC> gc_drawingarea ;
-	Glib::RefPtr<Gdk::Pixmap> pixmap ;
-	Glib::RefPtr<Gdk::GC> gc_pixmap ;
 
-	Gdk::Color color_used, color_unused, color_arrow, color_background, color_partition, color_arrow_rectangle;
+	Gdk::RGBA rgba_used, rgba_unused, rgba_arrow, rgba_background, rgba_partition, rgba_arrow_rectangle;
 
 	std::vector<Gdk::Point> arrow_points;
 	

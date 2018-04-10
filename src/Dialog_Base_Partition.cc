@@ -23,7 +23,6 @@ namespace GParted
 	
 Dialog_Base_Partition::Dialog_Base_Partition()
 {
-	this ->set_has_separator( false ) ;
 	frame_resizer_base = NULL;
 	GRIP = false ;
 	this ->fixed_start = false ;
@@ -101,15 +100,15 @@ Dialog_Base_Partition::Dialog_Base_Partition()
 
 	//fill partition alignment combo
 	/*TO TRANSLATORS: option for combo box "Align to:" */
-	combotext_alignment .append( _("Cylinder") ) ;
+	combo_alignment .append( _("Cylinder") ) ;
 	/*TO TRANSLATORS: option for combo box "Align to:" */
-	combotext_alignment .append( _("MiB") ) ;
+	combo_alignment .append( _("MiB") ) ;
 	/*TO TRANSLATORS: option for combo box "Align to:" */
-	combotext_alignment .append( _("None") ) ;
+	combo_alignment .append( _("None") ) ;
 
-	combotext_alignment .set_active( ALIGN_MEBIBYTE );  //Default setting
+	combo_alignment .set_active( ALIGN_MEBIBYTE );  //Default setting
 
-	table_resize .attach( combotext_alignment, 1, 2, 3, 4, Gtk::FILL );
+	table_resize .attach( combo_alignment, 1, 2, 3, 4, Gtk::FILL );
 
 	this->add_button( Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL );
 	this ->show_all_children() ;
@@ -175,7 +174,7 @@ void Dialog_Base_Partition::prepare_new_partition()
 		new_partition->sector_end = START + total_length - 1;
 
 	//set alignment
-	switch ( combotext_alignment .get_active() )
+	switch ( combo_alignment .get_active() )
 	{
 		case 0:
 			new_partition->alignment = ALIGN_CYLINDER;

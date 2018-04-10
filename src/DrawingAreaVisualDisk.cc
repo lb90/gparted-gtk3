@@ -33,18 +33,11 @@ DrawingAreaVisualDisk::DrawingAreaVisualDisk()
 {
 	selected_vp = NULL ;
 
-	//set and allocated some standard colors
-	color_used .set( Utils::get_color( GParted::FS_USED ) );
-	get_colormap() ->alloc_color( color_used ) ;
-	
-	color_unused .set( Utils::get_color( GParted::FS_UNUSED ) );
-	get_colormap() ->alloc_color( color_unused ) ;
-	
-	color_unallocated .set( Utils::get_color( GParted::FS_UNALLOCATED ) );
-	get_colormap() ->alloc_color( color_unallocated ) ;
-
-	color_text .set( "black" );
-	get_colormap() ->alloc_color( color_text ) ;
+	//set some standard colors
+	rgba_used .set( Utils::get_color( GParted::FS_USED ) );
+	rgba_unused .set( Utils::get_color( GParted::FS_UNUSED ) );
+	rgba_unallocated .set( Utils::get_color( GParted::FS_UNALLOCATED ) );
+	rgba_text .set( "black" );
 
 	add_events( Gdk::BUTTON_PRESS_MASK );
 	

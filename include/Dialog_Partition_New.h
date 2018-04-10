@@ -21,9 +21,8 @@
 #include "Dialog_Base_Partition.h"
 #include "Device.h"
 #include "Partition.h"
+#include "OptionComboBox.h"
 #include "Utils.h"
-
-#include <gtkmm/optionmenu.h>
 
 namespace GParted
 {
@@ -54,15 +53,14 @@ private:
 	Byte_Value get_filesystem_min_limit( FSType fstype );
 
 	Gtk::Table table_create;
-	Gtk::OptionMenu optionmenu_type, optionmenu_filesystem;
-	Gtk::Menu menu_type, menu_filesystem;
+	OptionComboBox combo_type, combo_filesystem;
 	Gtk::Entry partition_name_entry;
 	Gtk::Entry filesystem_label_entry;
 
 	std::vector<FS> FILESYSTEMS ;
 	
 	//signal handlers
-	void optionmenu_changed( bool );
+	void combo_changed( bool );
 
 	unsigned short new_count, first_creatable_fs ;
 };

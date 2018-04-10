@@ -46,8 +46,7 @@ private:
 	void Display_Info();
 
 	//signalhandlers
-	void drawingarea_on_realize();
-	bool drawingarea_on_expose( GdkEventExpose *ev );
+	bool drawingarea_on_draw( const Cairo::RefPtr<Cairo::Context>& cr );
 
 	const Partition & partition;  // (Alias to element in Win_GParted::display_partitions[] vector).
 
@@ -57,10 +56,9 @@ private:
 	Gtk::VBox info_msg_vbox ;
 	Gtk::ScrolledWindow info_scrolled ;
 
-	Glib::RefPtr<Gdk::GC> gc;
 	Glib::RefPtr<Pango::Layout> pango_layout;
 
-	Gdk::Color color_partition, color_used, color_unused, color_unallocated, color_text ;
+	Gdk::RGBA rgba_partition, rgba_used, rgba_unused, rgba_unallocated, rgba_text ;
 
 	int used, unused, unallocated ;
 };

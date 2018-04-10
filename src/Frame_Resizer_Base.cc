@@ -33,8 +33,8 @@ void Frame_Resizer_Base::init()
 
 	drawingarea .signal_realize() .connect( 
 			sigc::mem_fun(*this, &Frame_Resizer_Base::drawingarea_on_realize) ) ;
-	drawingarea .signal_expose_event() .connect( 
-			sigc::mem_fun(*this, &Frame_Resizer_Base::drawingarea_on_expose) ) ;
+	drawingarea .signal_draw() .connect( 
+			sigc::mem_fun(*this, &Frame_Resizer_Base::drawingarea_on_draw) ) ;
 	drawingarea .signal_motion_notify_event() .connect( 
 			sigc::mem_fun(*this, &Frame_Resizer_Base::drawingarea_on_mouse_motion) ) ;
 	drawingarea .signal_button_press_event() .connect( 
@@ -46,14 +46,14 @@ void Frame_Resizer_Base::init()
 		
 	this ->add( drawingarea ) ;
 	
-	color_used .set( "#F8F8BA" );			this ->get_colormap() ->alloc_color( color_used ) ;
-	color_unused .set( "white" );			this ->get_colormap() ->alloc_color( color_unused ) ;
-	color_arrow .set( "black" );			this ->get_colormap() ->alloc_color( color_arrow ) ;
-	color_background .set( "darkgrey" );		this ->get_colormap() ->alloc_color( color_background ) ;
-	color_arrow_rectangle .set( "lightgrey" );	this ->get_colormap() ->alloc_color( color_arrow_rectangle ) ;
+	rgba_used .set( "#F8F8BA" );
+	rgba_unused .set( "white" );
+	rgba_arrow .set( "black" );
+	rgba_background .set( "darkgrey" );
+	rgba_arrow_rectangle .set( "lightgrey" );
 	
-	cursor_resize = new Gdk::Cursor( Gdk::SB_H_DOUBLE_ARROW ) ; 
-	cursor_move   = new Gdk::Cursor( Gdk::FLEUR ) ; 
+	cursor_resize = Gdk::Cursor::create( Gdk::SB_H_DOUBLE_ARROW ) ; 
+	cursor_move   = Gdk::Cursor::create( Gdk::FLEUR ) ; 
 	  
 	GRIP_MOVE = GRIP_LEFT = GRIP_RIGHT = false;
 	X_END = 0;
@@ -67,19 +67,17 @@ void Frame_Resizer_Base::init()
 	this ->show_all_children();
 }
 
-void Frame_Resizer_Base::set_rgb_partition_color( const Gdk::Color & color )
+/*TODO those are one liners, no need to have a separate function anymore */
+void Frame_Resizer_Base::set_rgb_partition_color( const Gdk::RGBA & rgba )
 {
-	this ->get_colormap() ->free_color( color_partition ) ;
-	this ->color_partition = color ;
-	this ->get_colormap() ->alloc_color( color_partition ) ;
+	this ->rgba_partition = rgba ;
 }
 
-void Frame_Resizer_Base::override_default_rgb_unused_color( const Gdk::Color & color ) 
+void Frame_Resizer_Base::override_default_rgb_unused_color( const Gdk::RGBA & rgba ) 
 {
-	this ->get_colormap() ->free_color( color_unused ) ;
-	this ->color_unused = color ;
-	this ->get_colormap() ->alloc_color( color_unused ) ;
+	this ->rgba_unused = rgba ;
 }
+/**/
 
 void Frame_Resizer_Base::set_x_start( int x_start ) 
 {  
@@ -128,22 +126,16 @@ int Frame_Resizer_Base::get_x_end()
 }
 
 void Frame_Resizer_Base::drawingarea_on_realize()
-{
-	gc_drawingarea = Gdk::GC::create( drawingarea .get_window() );
-	pixmap = Gdk::Pixmap::create( drawingarea .get_window(),
-				      drawingarea .get_allocation() .get_width(),
-				      drawingarea .get_allocation() .get_height() );
-	gc_pixmap = Gdk::GC::create( pixmap );
-	
+{	
 	drawingarea .add_events( Gdk::POINTER_MOTION_MASK );
 	drawingarea .add_events( Gdk::BUTTON_PRESS_MASK );
 	drawingarea .add_events( Gdk::BUTTON_RELEASE_MASK );
 	drawingarea .add_events( Gdk::LEAVE_NOTIFY_MASK );
 }
 
-bool Frame_Resizer_Base::drawingarea_on_expose( GdkEventExpose * ev )
+bool Frame_Resizer_Base::drawingarea_on_draw( const Cairo::RefPtr<Cairo::Context>& cr )
 { 
-	Draw_Partition() ;
+	Draw_Partition(cr) ;
 	return true;
 }
 
@@ -282,7 +274,7 @@ bool Frame_Resizer_Base::drawingarea_on_mouse_motion( GdkEventMotion * ev )
 			signal_move .emit( X_START - GRIPPER, X_END - GRIPPER - BORDER * 2 ) ;
 		}
 		
-		Draw_Partition() ;
+		drawingarea.queue_draw() ;
 	}
 	else
 	{ 
@@ -293,18 +285,18 @@ bool Frame_Resizer_Base::drawingarea_on_mouse_motion( GdkEventMotion * ev )
 		     ev ->x <= X_START &&
 		     ev ->y >= 5 &&
 		     ev ->y <= 45 )
-			drawingarea .get_parent_window() ->set_cursor( *cursor_resize ) ;
+			drawingarea .get_parent_window() ->set_cursor( cursor_resize ) ;
 		//right grip
 		else if ( ev ->x >= X_END &&
 			  ev ->x <= X_END + GRIPPER &&
 			  ev ->y >= 5 && 
 			  ev ->y <= 45 )
-			drawingarea .get_parent_window() ->set_cursor( *cursor_resize ) ;
+			drawingarea .get_parent_window() ->set_cursor( cursor_resize ) ;
 		//move grip
 		else if ( ! fixed_start && 
 			  ev ->x >= X_START && 
 			  ev ->x <= X_END )
-			drawingarea .get_parent_window() ->set_cursor( *cursor_move ) ;
+			drawingarea .get_parent_window() ->set_cursor( cursor_move ) ;
 		//normal pointer 
 		else								
 			drawingarea .get_parent_window() ->set_cursor() ;		
@@ -357,47 +349,57 @@ bool Frame_Resizer_Base::drawingarea_on_leave_notify( GdkEventCrossing *ev )
 	return true;
 }
 
-void Frame_Resizer_Base::Draw_Partition()   
+void Frame_Resizer_Base::Draw_Partition( const Cairo::RefPtr<Cairo::Context>& cr )   
 {
 	UNUSED = X_END - X_START - BORDER * 2 - USED ;
 	if ( UNUSED < 0 )
 		UNUSED = 0 ;
-	
-	if ( drawingarea .get_window() )
-	{
-		//i couldn't find a clear() for a pixmap, that's why ;)
-		gc_pixmap ->set_foreground( color_background );
-		pixmap ->draw_rectangle( gc_pixmap, true, 0, 0, 536, 50 );
+
+	//i couldn't find a clear() for a pixmap, that's why ;)
+	cr ->set_source_rgb( rgba_background.get_red(),
+	                     rgba_background.get_green(),
+	                     rgba_background.get_blue() );
+	cr ->rectangle( 0, 0, 536, 50 );
+	cr ->fill();
 		
-		//the two rectangles on each side of the partition
-		gc_pixmap ->set_foreground( color_arrow_rectangle );
-		pixmap ->draw_rectangle( gc_pixmap, true, 0, 0, 10, 50 );
-		pixmap ->draw_rectangle( gc_pixmap, true, 526, 0, 10, 50 );
+	//the two rectangles on each side of the partition
+	cr ->set_source_rgb( rgba_arrow_rectangle.get_red(),
+	                     rgba_arrow_rectangle.get_green(),
+	                     rgba_arrow_rectangle.get_blue() );
+	cr ->rectangle( 0, 0, 10, 50 );
+	cr ->fill();
+	cr ->rectangle( 526, 0, 10, 50 );
+	cr ->fill();
 		
-		//partition
-		gc_pixmap ->set_foreground( color_partition );
-		pixmap ->draw_rectangle( gc_pixmap, true, X_START, 0, X_END - X_START, 50 );
+	//partition
+	cr ->set_source_rgb( rgba_partition.get_red(),
+	                     rgba_partition.get_green(),
+	                     rgba_partition.get_blue() );
+	cr ->rectangle( X_START, 0, X_END - X_START, 50 );
+	cr ->fill();
 		
-		//used
-		gc_pixmap ->set_foreground( color_used );
-		pixmap ->draw_rectangle( gc_pixmap, true, X_START +BORDER, BORDER, USED, 34 );
+	//used
+	cr ->set_source_rgb( rgba_used.get_red(),
+	                     rgba_used.get_green(),
+	                     rgba_used.get_blue() );
+	cr ->rectangle( X_START +BORDER, BORDER, USED, 34 );
+	cr ->fill();
 		
-		//unused
-		gc_pixmap ->set_foreground( color_unused );
-		pixmap ->draw_rectangle( gc_pixmap, true, X_START +BORDER +USED, BORDER, UNUSED, 34 );
+	//unused
+	cr ->set_source_rgb( rgba_unused.get_red(),
+	                     rgba_unused.get_green(),
+	                     rgba_unused.get_blue() );
+	cr ->rectangle( X_START +BORDER +USED, BORDER, UNUSED, 34 );
+	cr ->fill();
 		
-		//resize grips
-		if ( ! fixed_start )
-			Draw_Resize_Grip( ARROW_LEFT ) ;
-		
-		Draw_Resize_Grip( ARROW_RIGHT ) ;
-		
-		//and draw everything to "real" screen..
-		drawingarea .get_window() ->draw_drawable( gc_drawingarea, pixmap, 0, 0, 0, 0 ) ;
-	}
+	//resize grips
+	if ( ! fixed_start )
+		Draw_Resize_Grip( cr, ARROW_LEFT ) ;
+
+	Draw_Resize_Grip( cr, ARROW_RIGHT ) ;
 }
 
-void Frame_Resizer_Base::Draw_Resize_Grip( ArrowType arrow_type ) 
+void Frame_Resizer_Base::Draw_Resize_Grip( const Cairo::RefPtr<Cairo::Context>& cr, ArrowType arrow_type ) 
 {
 	if ( arrow_type == ARROW_LEFT )
 	{
@@ -413,27 +415,26 @@ void Frame_Resizer_Base::Draw_Resize_Grip( ArrowType arrow_type )
 	}
 	
 	//attach resize arrows to the partition
-	gc_pixmap ->set_foreground( color_arrow_rectangle );
-	pixmap ->draw_rectangle( gc_pixmap,
-				 false,
+	cr ->set_source_rgb( rgba_arrow_rectangle.get_red(),
+	                     rgba_arrow_rectangle.get_green(),
+	                     rgba_arrow_rectangle.get_blue() );
+	cr ->rectangle(
 				 arrow_type == ARROW_LEFT ? X_START - GRIPPER : X_END +1,
 				 5,
 				 9,
 				 40 ) ;
+	cr ->stroke();
 	
-	gc_pixmap ->set_foreground( color_arrow );
-	pixmap ->draw_polygon( gc_pixmap, true, arrow_points );
+	cr ->set_source_rgb( rgba_arrow.get_red(),
+	                     rgba_arrow.get_green(),
+	                     rgba_arrow.get_blue() );
+	cr ->move_to( arrow_points[0].get_x(), arrow_points[0].get_y() );
+	cr ->line_to( arrow_points[1].get_x(), arrow_points[1].get_y() );
+	cr ->line_to( arrow_points[2].get_x(), arrow_points[2].get_y() );
+	cr ->close_path();
+	cr ->fill();
 }
 
 Frame_Resizer_Base::~Frame_Resizer_Base()
-{ 
-	this ->get_colormap() ->free_color( color_used ) ;
-	this ->get_colormap() ->free_color( color_unused ) ;
-	this ->get_colormap() ->free_color( color_arrow ) ;
-	this ->get_colormap() ->free_color( color_background ) ;
-	this ->get_colormap() ->free_color( color_partition ) ;
-	this ->get_colormap() ->free_color( color_arrow_rectangle ) ;
-	
-	delete cursor_resize;
-	delete cursor_move;
+{
 }

@@ -91,45 +91,43 @@ void Dialog_Partition_New::set_data( const Device & device,
 	table_create .set_row_spacings( 5 ) ;
 	hbox_main .pack_start( table_create, Gtk::PACK_SHRINK );
 	
-	/*TO TRANSLATORS: used as label for a list of choices.   Create as: <optionmenu with choices> */
+	/*TO TRANSLATORS: used as label for a list of choices.   Create as: <combo box with choices> */
 	table_create .attach( * Utils::mk_label( static_cast<Glib::ustring>( _("Create as:") ) + "\t" ), 
 			      0, 1, 0, 1,
 			      Gtk::FILL );
 	
-	//fill partitiontype menu
-	menu_type .items() .push_back( Gtk::Menu_Helpers::MenuElem( _("Primary Partition") ) ) ;
-	menu_type .items() .push_back( Gtk::Menu_Helpers::MenuElem( _("Logical Partition") ) ) ;
-	menu_type .items() .push_back( Gtk::Menu_Helpers::MenuElem( _("Extended Partition") ) ) ;
+	//fill partitiontype combo box	
+	combo_type .append( _("Primary Partition") ) ;
+	combo_type .append( _("Logical Partition") ) ;
+	combo_type .append( _("Extended Partition") ) ;
 	
 	//determine which PartitionType is allowed
 	if ( device.disktype != "msdos" && device.disktype != "dvh" )
 	{
-		menu_type .items()[ 1 ] .set_sensitive( false ); 
-		menu_type .items()[ 2 ] .set_sensitive( false );
-		menu_type .set_active( 0 );
+		combo_type .items()[ 1 ] .set_sensitive( false ); 
+		combo_type .items()[ 2 ] .set_sensitive( false );
+		combo_type .set_active( 0 );
 	}
 	else if ( selected_partition.inside_extended )
 	{
-		menu_type .items()[ 0 ] .set_sensitive( false ); 
-		menu_type .items()[ 2 ] .set_sensitive( false );
-		menu_type .set_active( 1 );
+		combo_type .items()[ 0 ] .set_sensitive( false ); 
+		combo_type .items()[ 2 ] .set_sensitive( false );
+		combo_type .set_active( 1 );
 	}
 	else
 	{
-		menu_type .items()[ 1 ] .set_sensitive( false ); 
+		combo_type .items()[ 1 ] .set_sensitive( false ); 
 		if ( any_extended )
-			menu_type .items()[ 2 ] .set_sensitive( false );
+			combo_type .items()[ 2 ] .set_sensitive( false );
 	}
-	
-	optionmenu_type .set_menu( menu_type );
 	
 	//160 is the ideal width for this table column.
 	//(when one widget is set, the rest wil take this width as well)
-	optionmenu_type .set_size_request( 160, -1 ); 
+	combo_type .set_size_request( 160, -1 ); 
 	
-	optionmenu_type .signal_changed() .connect( 
-		sigc::bind<bool>( sigc::mem_fun( *this, &Dialog_Partition_New::optionmenu_changed ), true ) );
-	table_create .attach( optionmenu_type, 1, 2, 0, 1, Gtk::FILL );
+	combo_type .signal_changed() .connect( 
+		sigc::bind<bool>( sigc::mem_fun( *this, &Dialog_Partition_New::combo_changed ), true ) );
+	table_create .attach( combo_type, 1, 2, 0, 1, Gtk::FILL );
 	
 	// Partition name
 	table_create.attach( *Utils::mk_label( static_cast<Glib::ustring>( _("Partition name:") ) + "\t" ),
@@ -146,11 +144,10 @@ void Dialog_Partition_New::set_data( const Device & device,
 	                      0, 1, 2, 3, Gtk::FILL );
 
 	Build_Filesystems_Menu( device.readonly );
-	 
-	optionmenu_filesystem .set_menu( menu_filesystem );
-	optionmenu_filesystem .signal_changed() .connect( 
-		sigc::bind<bool>( sigc::mem_fun( *this, &Dialog_Partition_New::optionmenu_changed ), false ) );
-	table_create .attach( optionmenu_filesystem, 1, 2, 2, 3, Gtk::FILL );
+
+	optioncombo_filesystem .signal_changed() .connect( 
+		sigc::bind<bool>( sigc::mem_fun( *this, &Dialog_Partition_New::combo_changed ), false ) );
+	table_create .attach( optioncombo_filesystem, 1, 2, 2, 3, Gtk::FILL );
 
 	//Label
 	table_create .attach( * Utils::mk_label( Glib::ustring( _("Label:") ) ),
@@ -169,8 +166,8 @@ void Dialog_Partition_New::set_data( const Device & device,
 	MB_PER_PIXEL = TOTAL_MB / 500.00 ;
 	
 	//set first enabled file system
-	optionmenu_filesystem .set_history( first_creatable_fs ) ;
-	optionmenu_changed( false ) ;
+	combo_filesystem .set_history( first_creatable_fs ) ;
+	combo_changed( false ) ;
 	
 	//set spinbuttons initial values
 	spinbutton_after .set_value( 0 ) ;
@@ -181,9 +178,9 @@ void Dialog_Partition_New::set_data( const Device & device,
 	if ( TOTAL_MB < 2 )
 		frame_resizer_base ->set_sensitive( false ) ;
 
-	//connect signal handler for Dialog_Base_Partiton optionmenu_alignment
-	optionmenu_alignment .signal_changed() .connect( 
-		sigc::bind<bool>( sigc::mem_fun( *this, &Dialog_Partition_New::optionmenu_changed ), false ) );
+	//connect signal handler for Dialog_Base_Partiton combo_alignment
+	combo_alignment .signal_changed() .connect( 
+		 sigc::bind<bool>( sigc::mem_fun( *this, &Dialog_Partition_New::combo_changed ), false ) );
 
 	this ->show_all_children() ;
 }
@@ -195,7 +192,7 @@ const Partition & Dialog_Partition_New::Get_New_Partition()
 	PartitionType part_type ;
 	Sector new_start, new_end;
 		
-	switch ( optionmenu_type .get_history() )
+	switch ( combo_type .get_history() )
 	{
 		case 0	:	part_type = GParted::TYPE_PRIMARY;  break;
 		case 1	:	part_type = GParted::TYPE_LOGICAL;  break;
@@ -234,7 +231,7 @@ const Partition & Dialog_Partition_New::Get_New_Partition()
 	new_partition->Set( device_path,
 	                    String::ucompose( _("New Partition #%1"), new_count ),
 	                    new_count, part_type,
-	                    FILESYSTEMS[optionmenu_filesystem.get_history()].filesystem,
+	                    FILESYSTEMS[combo_filesystem.get_history()].filesystem,
 	                    new_start, new_end,
 	                    sector_size,
 	                    inside_extended, false );
@@ -247,7 +244,7 @@ const Partition & Dialog_Partition_New::Get_New_Partition()
 	new_partition->set_filesystem_label( Utils::trim( filesystem_label_entry.get_text() ) );
 
 	//set alignment
-	switch ( optionmenu_alignment .get_history() )
+	switch ( combo_alignment .get_history() )
 	{
 		case 0:
 			new_partition->alignment = ALIGN_CYLINDER;
@@ -312,34 +309,34 @@ const Partition & Dialog_Partition_New::Get_New_Partition()
 	return *new_partition;
 }
 
-void Dialog_Partition_New::optionmenu_changed( bool type )
+void Dialog_Partition_New::combo_changed( bool type )
 {
 	g_assert( new_partition != NULL );  // Bug: Not initialised by constructor calling set_data()
 
-	//optionmenu_type
+	//combo_type
 	if ( type )
 	{
-		if ( optionmenu_type .get_history() == GParted::TYPE_EXTENDED &&
-		     menu_filesystem .items() .size() < FILESYSTEMS .size() )
+		if ( combo_type .get_history() == GParted::TYPE_EXTENDED &&
+		     combo_filesystem .items() .size() < FILESYSTEMS .size() )
 		{
-			menu_filesystem .items() .push_back( 
-				Gtk::Menu_Helpers::MenuElem( Utils::get_filesystem_string( GParted::FS_EXTENDED ) ) ) ;
-			optionmenu_filesystem .set_history( menu_filesystem .items() .size() -1 ) ;
-			optionmenu_filesystem .set_sensitive( false ) ;
+			combo_filesystem .append( 
+				Utils::get_filesystem_string( GParted::FS_EXTENDED ) ) ;
+			combo_filesystem .set_history( menu_filesystem .items() .size() -1 ) ;
+			combo_filesystem .set_sensitive( false ) ;
 		}
-		else if ( optionmenu_type .get_history() != GParted::TYPE_EXTENDED &&
-			  menu_filesystem .items() .size() == FILESYSTEMS .size() ) 
+		else if ( combo_type .get_history() != GParted::TYPE_EXTENDED &&
+			  combo_filesystem .items() .size() == FILESYSTEMS .size() ) 
 		{
-			menu_filesystem .items() .remove( menu_filesystem .items() .back() ) ;
-			optionmenu_filesystem .set_sensitive( true ) ;
-			optionmenu_filesystem .set_history( first_creatable_fs ) ;
+			combo_filesystem .pop() ;
+			combo_filesystem .set_sensitive( true ) ;
+			combo_filesystem .set_history( first_creatable_fs ) ;
 		}
 	}
 	
-	//optionmenu_filesystem and optionmenu_alignment
+	//combo_filesystem and combo_alignment
 	if ( ! type )
 	{
-		fs = FILESYSTEMS[ optionmenu_filesystem .get_history() ] ;
+		fs = FILESYSTEMS[ combo_filesystem .get_history() ] ;
 		fs_limits = GParted_Core::get_filesystem_limits( fs.filesystem, *new_partition );
 
 		if ( fs_limits.min_size < MEBIBYTE )
@@ -373,7 +370,7 @@ void Dialog_Partition_New::optionmenu_changed( bool type )
 	{
 		Gdk::Color color_temp;
 		//Background color
-		color_temp.set((optionmenu_type.get_history() == 2) ? "darkgrey" : "white");
+		color_temp.set((combo_type.get_history() == 2) ? "darkgrey" : "white");
 		frame_resizer_base->override_default_rgb_unused_color(color_temp);
 
 		//Partition color
@@ -398,9 +395,9 @@ void Dialog_Partition_New::Build_Filesystems_Menu( bool only_unformatted )
 		//skip extended
 		if( FILESYSTEMS[ t ] .filesystem == GParted::FS_EXTENDED )
 			continue ;
-		menu_filesystem .items() .push_back( 
-			Gtk::Menu_Helpers::MenuElem( Utils::get_filesystem_string( FILESYSTEMS[ t ] .filesystem ) ) ) ;
-		menu_filesystem .items() .back() .set_sensitive(
+		combo_filesystem .append(
+			Utils::get_filesystem_string( FILESYSTEMS[ t ] .filesystem ) ) ;
+		combo_filesystem .items() .back() .set_sensitive(
 			! only_unformatted && FILESYSTEMS[ t ] .create &&
 			new_partition->get_byte_length() >= get_filesystem_min_limit( FILESYSTEMS[t].filesystem ) );
 		//use ext4/3/2 as first/second/third choice default file system
@@ -408,21 +405,21 @@ void Dialog_Partition_New::Build_Filesystems_Menu( bool only_unformatted )
 		if ( ( FILESYSTEMS[ t ] .filesystem == FS_EXT2 ||
 		       FILESYSTEMS[ t ] .filesystem == FS_EXT3 ||
 		       FILESYSTEMS[ t ] .filesystem == FS_EXT4    ) &&
-		     menu_filesystem .items() .back() .sensitive()     )
+		     combo_filesystem .items() .back() .get_sensitive() )
 		{
-			first_creatable_fs=menu_filesystem .items() .size() - 1;
+			first_creatable_fs=combo_filesystem .items() .size() - 1;
 			set_first=true;
 		}
 	}
 	
 	//unformatted is always available
-	menu_filesystem .items() .back() .set_sensitive( true ) ;
+	combo_filesystem .items() .back() .set_sensitive( true ) ;
 	
 	if(!set_first)
 	{
 		//find and set first enabled file system as last choice default
-		for ( unsigned int t = 0 ; t < menu_filesystem .items() .size() ; t++ )
-			if ( menu_filesystem .items()[ t ] .sensitive() )
+		for ( unsigned int t = 0 ; t < combo_filesystem .get_model() ->children() .size() ; t++ )
+			if ( combo_filesystem .items()[ t ] .get_sensitive() )
 			{
 				first_creatable_fs = t ;
 				break ;
