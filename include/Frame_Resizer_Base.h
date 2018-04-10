@@ -47,7 +47,7 @@ public:
 	int get_x_start() ;
 	int get_x_end() ;
 
-	virtual void Draw_Partition( const Cairo::RefPtr<Cairo::Context>& cr ) ;
+	void Queue_Draw();
 
 	//public signals  (emitted upon resize/move)
 	sigc::signal<void,int,int, ArrowType> signal_resize;
@@ -62,6 +62,7 @@ protected:
 	//signal handlers
 	void drawingarea_on_realize();
 	bool drawingarea_on_draw( const Cairo::RefPtr<Cairo::Context>& cr );
+	virtual void Draw_Partition( const Cairo::RefPtr<Cairo::Context>& cr ) ;
 	virtual bool drawingarea_on_mouse_motion( GdkEventMotion * ev ) ;
 	bool drawingarea_on_button_press_event( GdkEventButton * ev ) ;
 	bool drawingarea_on_button_release_event( GdkEventButton * ev ) ;

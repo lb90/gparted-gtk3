@@ -368,20 +368,20 @@ void Dialog_Partition_New::combo_changed( bool type )
 
 	//set fitting resizer colors
 	{
-		Gdk::Color color_temp;
+		Gdk::RGBA rgba_temp;
 		//Background color
-		color_temp.set((combo_type.get_history() == 2) ? "darkgrey" : "white");
-		frame_resizer_base->override_default_rgb_unused_color(color_temp);
+		rgba_temp.set((combo_type.get_history() == 2) ? "darkgrey" : "white");
+		frame_resizer_base->override_default_rgb_unused_color(rgba_temp);
 
 		//Partition color
-		color_temp.set(Utils::get_color(fs.filesystem));
-		frame_resizer_base->set_rgb_partition_color(color_temp);
+		rgba_temp.set(Utils::get_color(fs.filesystem));
+		frame_resizer_base->set_rgb_partition_color(rgba_temp);
 	}
 
 	// Maximum length of the file system label varies according to the selected file system type.
 	filesystem_label_entry.set_max_length( Utils::get_filesystem_label_maxlength( fs.filesystem ) );
 
-	frame_resizer_base ->Draw_Partition() ;
+	frame_resizer_base ->Queue_Draw() ;
 }
 
 void Dialog_Partition_New::Build_Filesystems_Menu( bool only_unformatted ) 

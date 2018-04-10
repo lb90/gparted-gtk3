@@ -124,7 +124,7 @@ bool Frame_Resizer_Extended::drawingarea_on_mouse_motion( GdkEventMotion * ev )
 			}
 		}
 		
-		Draw_Partition() ;
+		Queue_Draw() ;
 	}
 	
 	//check if pointer is over a gripper

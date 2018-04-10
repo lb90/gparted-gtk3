@@ -59,8 +59,8 @@ void Dialog_Partition_Resize_Move::set_data( const Partition & selected_partitio
 	}
 	
 	//set partition color
-	Gdk::Color partition_color( Utils::get_color( selected_partition.filesystem ) );
-	frame_resizer_base->set_rgb_partition_color( partition_color );
+	Gdk::RGBA partition_rgba( Utils::get_color( selected_partition.filesystem ) );
+	frame_resizer_base->set_rgb_partition_color( partition_rgba );
 
 	//store the original values
 	ORIG_BEFORE 	= spinbutton_before .get_value_as_int() ;

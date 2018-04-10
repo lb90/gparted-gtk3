@@ -274,7 +274,7 @@ bool Frame_Resizer_Base::drawingarea_on_mouse_motion( GdkEventMotion * ev )
 			signal_move .emit( X_START - GRIPPER, X_END - GRIPPER - BORDER * 2 ) ;
 		}
 		
-		drawingarea.queue_draw() ;
+		this->Queue_Draw();
 	}
 	else
 	{ 
@@ -433,6 +433,11 @@ void Frame_Resizer_Base::Draw_Resize_Grip( const Cairo::RefPtr<Cairo::Context>& 
 	cr ->line_to( arrow_points[2].get_x(), arrow_points[2].get_y() );
 	cr ->close_path();
 	cr ->fill();
+}
+
+void Frame_Resizer_Base::Queue_Draw()
+{
+	drawingarea.queue_draw() ;
 }
 
 Frame_Resizer_Base::~Frame_Resizer_Base()
