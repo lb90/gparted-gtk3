@@ -49,6 +49,22 @@ Glib::ustring OptionComboBox::get_active_text()
 	return text;
 }
 
+int OptionComboBox::get_active_index()
+{
+	Gtk::TreeModel::const_iterator active_iter = get_active();
+	
+	if (active_iter)
+	{
+		Gtk::TreeModel::Path active_path;
+		
+		active_path = get_model() ->get_path( active_iter );
+		if ( active_path )
+			return active_path[0];
+	}
+	
+	return -1;
+}
+
 void OptionComboBox::append(const Glib::ustring& text, bool sensitive)
 {
 	Gtk::TreeModel::Row row = *( m_model ->append() );

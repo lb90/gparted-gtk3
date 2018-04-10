@@ -60,6 +60,7 @@ public:
 	void clear();
 	
 	Glib::ustring get_active_text(); /*TODO make const */
+	int           get_active_index(); /*TODO make const */
 
 private:
 	OptionComboBox( const OptionComboBox & src );              // Not implemented copy constructor

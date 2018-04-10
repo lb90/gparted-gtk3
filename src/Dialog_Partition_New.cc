@@ -368,14 +368,14 @@ void Dialog_Partition_New::combo_changed( bool type )
 
 	//set fitting resizer colors
 	{
-		Gdk::RGBA rgba_temp;
+		Gdk::RGBA color_temp;
 		//Background color
-		rgba_temp.set((combo_type.get_history() == 2) ? "darkgrey" : "white");
-		frame_resizer_base->override_default_rgb_unused_color(rgba_temp);
+		color_temp.set((combo_type.get_history() == 2) ? "darkgrey" : "white");
+		frame_resizer_base->override_default_rgb_unused_color(color_temp);
 
 		//Partition color
-		rgba_temp.set(Utils::get_color(fs.filesystem));
-		frame_resizer_base->set_rgb_partition_color(rgba_temp);
+		color_temp.set(Utils::get_color(fs.filesystem));
+		frame_resizer_base->set_rgb_partition_color(color_temp);
 	}
 
 	// Maximum length of the file system label varies according to the selected file system type.

@@ -19,6 +19,9 @@
 #include "FileSystem.h"
 #include "Partition.h"
 
+#include <glibmm/shell.h>
+#include <glibmm/miscutils.h>
+
 /*****
 //For some reason unknown, this works without these include statements.
 #include <stdlib.h>    // 'C' library for mkstemp()

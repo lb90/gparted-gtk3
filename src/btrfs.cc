@@ -23,6 +23,9 @@
 
 #include <ctype.h>
 
+#include <glibmm/shell.h>
+#include <glibmm/miscutils.h>
+
 namespace GParted
 {
 

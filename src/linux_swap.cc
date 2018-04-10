@@ -22,6 +22,10 @@
 
 #include <cerrno>
 
+#include <glibmm/shell.h>
+#include <glibmm/miscutils.h>
+#include <glibmm/stringutils.h>
+
 namespace GParted
 {
 

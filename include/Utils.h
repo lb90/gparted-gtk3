@@ -180,6 +180,8 @@ private:
 	static bool get_kernel_version( int & major_ver, int & minor_ver, int & patch_ver ) ;
 };
 
+#define GDK_RGBA_COMPONENTS(gdk_rgba) gdk_rgba.get_red(), gdk_rgba.get_green(), gdk_rgba.get_blue()
+
 }//GParted
 
 #endif /* GPARTED_UTILS_H */

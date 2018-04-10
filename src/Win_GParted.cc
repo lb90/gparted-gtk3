@@ -50,6 +50,9 @@
 #include <gtkmm/main.h>
 #include <gtkmm/separator.h>
 #include <glibmm/ustring.h>
+#include <glibmm/shell.h>
+#include <glibmm/miscutils.h>
+#include <glibmm/spawn.h>
 
 namespace GParted
 {
@@ -605,7 +608,7 @@ void Win_GParted::refresh_combo_devices()
 		//combo...
 		treerow = *( liststore_devices ->append() ) ;
 		treerow[ treeview_devices_columns .icon ] =
-			render_icon( Gtk::Stock::HARDDISK, Gtk::ICON_SIZE_LARGE_TOOLBAR ) ;
+			render_icon_pixbuf( Gtk::Stock::HARDDISK, Gtk::ICON_SIZE_LARGE_TOOLBAR ) ;
 		treerow[ treeview_devices_columns .device ] = devices[ i ] .get_path() ;
 		treerow[ treeview_devices_columns .size ] = "(" + Utils::format_size( devices[ i ] .length, devices[ i ] .sector_size ) + ")" ; 
 	
@@ -1861,7 +1864,7 @@ void Win_GParted::activate_resize()
 		Operation * operation = new OperationResizeMove( devices[current_device],
 		                                                 *selected_partition_ptr,
 		                                                 *resized_ptn );
-		operation->icon = render_icon( Gtk::Stock::GOTO_LAST, Gtk::ICON_SIZE_MENU );
+		operation->icon = render_icon_pixbuf( Gtk::Stock::GOTO_LAST, Gtk::ICON_SIZE_MENU );
 
 		delete resized_ptn;
 		resized_ptn = NULL;
@@ -1957,7 +1960,7 @@ void Win_GParted::activate_paste()
 				                                           *selected_partition_ptr,
 				                                           dialog.Get_New_Partition(),
 				                                           *copied_partition );
-				operation ->icon = render_icon( Gtk::Stock::COPY, Gtk::ICON_SIZE_MENU );
+				operation ->icon = render_icon_pixbuf( Gtk::Stock::COPY, Gtk::ICON_SIZE_MENU );
 
 				// When pasting into unallocated space set a temporary
 				// path of "Copy of /dev/SRC" for display purposes until
@@ -2045,7 +2048,7 @@ void Win_GParted::activate_paste()
 		                                           *selected_partition_ptr,
 		                                           *partition_new,
 		                                           *copied_partition );
-		operation ->icon = render_icon( Gtk::Stock::COPY, Gtk::ICON_SIZE_MENU );
+		operation ->icon = render_icon_pixbuf( Gtk::Stock::COPY, Gtk::ICON_SIZE_MENU );
 
 		delete partition_new;
 		partition_new = NULL;
@@ -2106,7 +2109,7 @@ void Win_GParted::activate_new()
 			Operation * operation = new OperationCreate( devices[current_device],
 			                                             *selected_partition_ptr,
 			                                             dialog.Get_New_Partition() );
-			operation ->icon = render_icon( Gtk::Stock::NEW, Gtk::ICON_SIZE_MENU );
+			operation ->icon = render_icon_pixbuf( Gtk::Stock::NEW, Gtk::ICON_SIZE_MENU );
 
 			Add_Operation( devices[current_device], operation );
 
@@ -2220,7 +2223,7 @@ void Win_GParted::activate_delete()
 	else //deletion of a real partition...
 	{
 		Operation * operation = new OperationDelete( devices[ current_device ], *selected_partition_ptr );
-		operation ->icon = render_icon( Gtk::Stock::DELETE, Gtk::ICON_SIZE_MENU ) ;
+		operation ->icon = render_icon_pixbuf( Gtk::Stock::DELETE, Gtk::ICON_SIZE_MENU ) ;
 
 		Add_Operation( devices[current_device], operation );
 	}
@@ -2372,7 +2375,7 @@ void Win_GParted::activate_format( FSType new_fs )
 		Operation * operation = new OperationFormat( devices[current_device],
 		                                             *selected_partition_ptr,
 		                                             *temp_ptn );
-		operation->icon = render_icon( Gtk::Stock::CONVERT, Gtk::ICON_SIZE_MENU );
+		operation->icon = render_icon_pixbuf( Gtk::Stock::CONVERT, Gtk::ICON_SIZE_MENU );
 
 		Add_Operation( devices[current_device], operation );
 		merge_operations( mergetype );
@@ -2826,7 +2829,7 @@ void Win_GParted::activate_check()
 	// file system to fill the partition.
 	Operation * operation = new OperationCheck( devices[current_device], *selected_partition_ptr );
 
-	operation ->icon = render_icon( Gtk::Stock::EXECUTE, Gtk::ICON_SIZE_MENU );
+	operation ->icon = render_icon_pixbuf( Gtk::Stock::EXECUTE, Gtk::ICON_SIZE_MENU );
 
 	Add_Operation( devices[current_device], operation );
 	// Try to merge this check operation with all previous operations.
@@ -2855,7 +2858,7 @@ void Win_GParted::activate_label_filesystem()
 
 		Operation * operation = new OperationLabelFileSystem( devices[current_device],
 		                                                      *selected_partition_ptr, *part_temp );
-		operation ->icon = render_icon( Gtk::Stock::EXECUTE, Gtk::ICON_SIZE_MENU );
+		operation ->icon = render_icon_pixbuf( Gtk::Stock::EXECUTE, Gtk::ICON_SIZE_MENU );
 
 		delete part_temp;
 		part_temp = NULL;
@@ -2889,7 +2892,7 @@ void Win_GParted::activate_name_partition()
 
 		Operation * operation = new OperationNamePartition( devices[current_device],
 		                                                    *selected_partition_ptr, *part_temp );
-		operation->icon = render_icon( Gtk::Stock::EXECUTE, Gtk::ICON_SIZE_MENU );
+		operation->icon = render_icon_pixbuf( Gtk::Stock::EXECUTE, Gtk::ICON_SIZE_MENU );
 
 		delete part_temp;
 		part_temp = NULL;
@@ -2947,7 +2950,7 @@ void Win_GParted::activate_change_uuid()
 
 	Operation * operation = new OperationChangeUUID( devices[current_device],
 	                                                 *selected_partition_ptr, *temp_ptn );
-	operation ->icon = render_icon( Gtk::Stock::EXECUTE, Gtk::ICON_SIZE_MENU );
+	operation ->icon = render_icon_pixbuf( Gtk::Stock::EXECUTE, Gtk::ICON_SIZE_MENU );
 
 	delete temp_ptn;
 	temp_ptn = NULL;

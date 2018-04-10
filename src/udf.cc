@@ -22,6 +22,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <glibmm/ustring.h>
+#include <glibmm/shell.h>
+#include <glibmm/miscutils.h>
 
 namespace GParted
 {
