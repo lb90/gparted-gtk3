@@ -25,6 +25,7 @@
 #include <gtkmm/cellrenderertext.h>
 #include <pangomm/layout.h>
 #include <glibmm/ustring.h>
+#include <glibmm/miscutils.h>
 
 namespace GParted
 { 
@@ -57,16 +58,16 @@ TreeView_Detail::TreeView_Detail()
 	// Tree view column "File System"; add file system text cell.
 	get_column( 2 )->pack_start( treeview_detail_columns.filesystem, true );
 	// Color pixbuf cell is left aligned.
-	get_column( 2 )->get_first_cell_renderer()->property_xalign() = Gtk::ALIGN_LEFT;
+	get_column( 2 )->get_first_cell()->property_xalign() = Gtk::ALIGN_START;
 	// File system text cell is left aligned.
-	std::vector<Gtk::CellRenderer*> renderers = get_column( 2 )->get_cell_renderers();
+	std::vector<Gtk::CellRenderer*> renderers = get_column( 2 )->get_cells();
 	Gtk::CellRendererText *cell_renderer_text = dynamic_cast<Gtk::CellRendererText*>( renderers.back() );
-	cell_renderer_text ->property_xalign() = Gtk::ALIGN_LEFT ;
+	cell_renderer_text ->property_xalign() = Gtk::ALIGN_START ;
 
 	// Tree view column "Mount Point", make column resizable and show too wide text
 	// with ellipsis.
 	get_column( 3 )->set_resizable( true );
-	cell_renderer_text = dynamic_cast<Gtk::CellRendererText *>( get_column( 3 )->get_first_cell_renderer() );
+	cell_renderer_text = dynamic_cast<Gtk::CellRendererText *>( get_column( 3 )->get_first_cell() );
 	cell_renderer_text->property_ellipsize() = Pango::ELLIPSIZE_END;
 
 	//set alignment of numeric columns to right
@@ -158,16 +159,16 @@ void TreeView_Detail::create_row( const Gtk::TreeRow & treerow,
 	const Partition & filesystem_ptn = partition.get_filesystem_partition();
 	if ( filesystem_ptn.busy )
 		treerow[ treeview_detail_columns .icon1 ] = 
-			render_icon( Gtk::Stock::DIALOG_AUTHENTICATION, Gtk::ICON_SIZE_BUTTON );
+			render_icon_pixbuf( Gtk::Stock::DIALOG_AUTHENTICATION, Gtk::ICON_SIZE_BUTTON );
 	
 	if ( partition.have_messages() > 0 )
 	{
 		if ( ! static_cast< Glib::RefPtr<Gdk::Pixbuf> >( treerow[ treeview_detail_columns .icon1 ] )  )
 			treerow[ treeview_detail_columns .icon1 ] = 
-				render_icon( Gtk::Stock::DIALOG_WARNING, Gtk::ICON_SIZE_BUTTON );
+				render_icon_pixbuf( Gtk::Stock::DIALOG_WARNING, Gtk::ICON_SIZE_BUTTON );
 		else
 			treerow[ treeview_detail_columns .icon2 ] = 
-				render_icon( Gtk::Stock::DIALOG_WARNING, Gtk::ICON_SIZE_BUTTON );
+				render_icon_pixbuf( Gtk::Stock::DIALOG_WARNING, Gtk::ICON_SIZE_BUTTON );
 	}
 
 	

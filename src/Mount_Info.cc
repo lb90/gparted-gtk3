@@ -26,6 +26,8 @@
 #include <string>
 #include <fstream>
 
+#include <glibmm/fileutils.h>
+
 namespace GParted
 {
 

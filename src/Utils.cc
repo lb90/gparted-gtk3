@@ -23,6 +23,8 @@
 #include <fstream>
 #include <iomanip>
 #include <glibmm/regex.h>
+#include <glibmm/shell.h>
+#include <glibmm/stringutils.h>
 #include <locale.h>
 #include <uuid/uuid.h>
 #include <cerrno>
