@@ -19,6 +19,8 @@
 #include "Dialog_Rescue_Data.h"
 #include "Partition.h"
 
+#include <glibmm/shell.h>
+#include <glibmm/stringutils.h>
 #include <gtkmm/messagedialog.h>
 #include <gtkmm/stock.h>
 #include <gtkmm/checkbutton.h>
@@ -66,8 +68,9 @@ void Dialog_Rescue_Data::draw_dialog()
 		msg_label.append(_("You might encounter errors trying to view these file systems."));
 		
 		Gtk::Label *inconsis_label=manage(Utils::mk_label(msg_label));
-		Gdk::Color c( "red" );
-		inconsis_label->modify_fg(Gtk::STATE_NORMAL, c );
+		Gdk::RGBA c = Gdk::RGBA();
+		c.set("red");
+		inconsis_label->override_color(c, Gtk::STATE_FLAG_NORMAL );
 		this->get_vbox()->pack_end(*inconsis_label, Gtk::PACK_SHRINK, 5);
 	}
 	message->append("</b></big>");

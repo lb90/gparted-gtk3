@@ -29,6 +29,7 @@
 #include <gtkmm/paned.h>
 #include <gtkmm/toolbar.h>
 #include <gtkmm/separatortoolitem.h>
+#include <gtkmm/checkmenuitem.h>
 #include <gtkmm/menubar.h>
 #include <gtkmm/statusbar.h>
 #include <gtkmm/combobox.h>
@@ -221,7 +222,7 @@ private:
 	Gtk::Image *image ;
 	Gtk::ScrolledWindow *scrollwindow;
 	Gtk::Label label_device_info1, label_device_info2, *label;
-	Gtk::Tooltips tooltips ;
+	Gtk::Tooltip tooltip ;
 	Gtk::Table *table ;
 	Gtk::MenuItem *menu_item;
 	Gtk::ProgressBar pulsebar ;

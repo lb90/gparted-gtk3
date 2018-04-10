@@ -22,6 +22,7 @@
 #include "Utils.h"
 #include "btrfs.h"
 
+#include <glibmm/miscutils.h>
 #include <gtk/gtk.h>
 #include <gtkmm/alignment.h>
 
@@ -30,7 +31,6 @@ namespace GParted
 
 Dialog_Partition_Info::Dialog_Partition_Info( const Partition & partition ) : partition( partition )
 {
-	this ->set_has_separator( false ) ;
 	// Set minimum dialog height so it fits on an 800x600 screen without too much
 	// whitespace (~500 px max for GNOME desktop).  Allow extra space if have any
 	// messages or for LVM2 PV or LUKS encryption.

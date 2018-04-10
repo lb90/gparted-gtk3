@@ -20,6 +20,8 @@
 #include "Utils.h"
 
 #include <glibmm/ustring.h>
+#include <glibmm/shell.h>
+#include <glibmm/miscutils.h>
 #include <vector>
 
 namespace GParted
