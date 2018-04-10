@@ -23,6 +23,10 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <sigc++/slot.h>
+#include <glibmm/shell.h>
+#include <glibmm/main.h>
+#include <glibmm/miscutils.h>
+#include <glibmm/stringutils.h>
 
 namespace GParted
 {
