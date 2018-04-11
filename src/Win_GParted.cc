@@ -1622,7 +1622,7 @@ void Win_GParted::show_help_dialog( const Glib::ustring & filename /* E.g., gpar
 		context ->set_screen ( get_window() ->get_screen () ) ;
 		context ->set_timestamp ( gtk_get_current_event_time () );
 
-		/*TODO: use _async verson, but you should also check for errors */
+		/*TODO: use _async version, but you should also check for errors */
 		bool launch_ok;
 		launch_ok = Gio::AppInfo::launch_default_for_uri ( command, context ) ;
 		
@@ -1639,9 +1639,7 @@ void Win_GParted::show_help_dialog( const Glib::ustring & filename /* E.g., gpar
 			dialog .run() ;
 		}
 	}
-
-		
-
+	/*TODO: free error? */
 }
 
 void Win_GParted::menu_help_contents()
