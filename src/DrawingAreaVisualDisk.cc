@@ -311,20 +311,20 @@ void DrawingAreaVisualDisk::set_selected( const std::vector<visual_partition> & 
 			selected_vp = & visual_partitions[ t ] ;
 	}
 }
-
+/*TODO remove*/
 void DrawingAreaVisualDisk::on_realize()
 {
 	Gtk::DrawingArea::on_realize() ;
-
-	gc ->set_line_attributes( 2,
-				  Gdk::LINE_ON_OFF_DASH,
-				  Gdk::CAP_BUTT,
-				  Gdk::JOIN_MITER ) ;
 }
-	
+/**/
 bool DrawingAreaVisualDisk::on_draw( const Cairo::RefPtr<Cairo::Context> & cr )
 {
 	bool ret_val = Gtk::DrawingArea::on_draw( cr ) ; /*TODO can we remove it? */
+	
+	cr ->set_line_width( 2.0 );
+	cr ->set_line_join( Cairo::LINE_JOIN_MITER ); // default
+	cr ->set_line_cap( Cairo::LINE_CAP_BUTT ); // default
+	cr ->set_dash( std::vector<double>{ 4.0 } , 0.0 );
 	
 	draw_partitions( cr, visual_partitions ) ;
 	 
