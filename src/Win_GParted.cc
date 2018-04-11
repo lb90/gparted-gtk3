@@ -1624,7 +1624,7 @@ void Win_GParted::show_help_dialog( const Glib::ustring & filename /* E.g., gpar
 		// like:
 		// 
 		// Glib::RefPtr<Gio::DesktopAppInfo> yelp
-		//       = Gio::DesktopAppInfo::create("org.gnome.yelp");
+		//       = Gio::DesktopAppInfo::create("yelp.desktop");
 		//
 		Glib::RefPtr<Gio::AppInfo> yelp
 		      = Gio::AppInfo::create_from_commandline("", "yelp", Gio::APP_INFO_CREATE_SUPPORTS_URIS);
