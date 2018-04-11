@@ -21,6 +21,7 @@
 #include "Frame_Resizer_Extended.h"
 #include "FileSystem.h"
 #include "Partition.h"
+#include <OptionComboBox.h>
 
 #include <gtkmm/dialog.h>
 #include <gtkmm/stock.h>
@@ -29,7 +30,6 @@
 #include <gtkmm/table.h>
 #include <gtkmm/box.h>
 #include <gtkmm/tooltip.h>
-#include <gtkmm/comboboxtext.h>
 
 namespace GParted
 {
@@ -72,7 +72,7 @@ protected:
 
 	Gtk::HBox hbox_main ;
 	Gtk::SpinButton spinbutton_before, spinbutton_size, spinbutton_after;
-	Gtk::ComboBoxText combo_alignment ;
+	OptionComboBox combo_alignment ;
 
 	sigc::connection before_change_connection, size_change_connection, after_change_connection ;
 

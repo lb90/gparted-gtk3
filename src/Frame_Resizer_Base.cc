@@ -16,6 +16,7 @@
  */
 
 #include "Frame_Resizer_Base.h"
+#include "Utils.h"
 
 Frame_Resizer_Base::Frame_Resizer_Base()
 {
@@ -46,11 +47,11 @@ void Frame_Resizer_Base::init()
 		
 	this ->add( drawingarea ) ;
 	
-	rgba_used .set( "#F8F8BA" );
-	rgba_unused .set( "white" );
-	rgba_arrow .set( "black" );
-	rgba_background .set( "darkgrey" );
-	rgba_arrow_rectangle .set( "lightgrey" );
+	color_used .set( "#F8F8BA" );
+	color_unused .set( "white" );
+	color_arrow .set( "black" );
+	color_background .set( "darkgrey" );
+	color_arrow_rectangle .set( "lightgrey" );
 	
 	cursor_resize = Gdk::Cursor::create( Gdk::SB_H_DOUBLE_ARROW ) ; 
 	cursor_move   = Gdk::Cursor::create( Gdk::FLEUR ) ; 
@@ -68,14 +69,14 @@ void Frame_Resizer_Base::init()
 }
 
 /*TODO those are one liners, no need to have a separate function anymore */
-void Frame_Resizer_Base::set_rgb_partition_color( const Gdk::RGBA & rgba )
+void Frame_Resizer_Base::set_rgb_partition_color( const Gdk::RGBA & color )
 {
-	this ->rgba_partition = rgba ;
+	this ->color_partition = color ;
 }
 
-void Frame_Resizer_Base::override_default_rgb_unused_color( const Gdk::RGBA & rgba ) 
+void Frame_Resizer_Base::override_default_rgb_unused_color( const Gdk::RGBA & color ) 
 {
-	this ->rgba_unused = rgba ;
+	this ->color_unused = color ;
 }
 /**/
 
@@ -356,39 +357,29 @@ void Frame_Resizer_Base::Draw_Partition( const Cairo::RefPtr<Cairo::Context>& cr
 		UNUSED = 0 ;
 
 	//i couldn't find a clear() for a pixmap, that's why ;)
-	cr ->set_source_rgb( rgba_background.get_red(),
-	                     rgba_background.get_green(),
-	                     rgba_background.get_blue() );
+	cr ->set_source_rgb( GDK_RGBA_COMPONENTS( color_background ) );
 	cr ->rectangle( 0, 0, 536, 50 );
 	cr ->fill();
 		
 	//the two rectangles on each side of the partition
-	cr ->set_source_rgb( rgba_arrow_rectangle.get_red(),
-	                     rgba_arrow_rectangle.get_green(),
-	                     rgba_arrow_rectangle.get_blue() );
+	cr ->set_source_rgb( GDK_RGBA_COMPONENTS( color_arrow_rectangle ) );
 	cr ->rectangle( 0, 0, 10, 50 );
 	cr ->fill();
 	cr ->rectangle( 526, 0, 10, 50 );
 	cr ->fill();
 		
 	//partition
-	cr ->set_source_rgb( rgba_partition.get_red(),
-	                     rgba_partition.get_green(),
-	                     rgba_partition.get_blue() );
+	cr ->set_source_rgb( GDK_RGBA_COMPONENTS( color_partition ) );
 	cr ->rectangle( X_START, 0, X_END - X_START, 50 );
 	cr ->fill();
 		
 	//used
-	cr ->set_source_rgb( rgba_used.get_red(),
-	                     rgba_used.get_green(),
-	                     rgba_used.get_blue() );
+	cr ->set_source_rgb( GDK_RGBA_COMPONENTS( color_used ) );
 	cr ->rectangle( X_START +BORDER, BORDER, USED, 34 );
 	cr ->fill();
 		
 	//unused
-	cr ->set_source_rgb( rgba_unused.get_red(),
-	                     rgba_unused.get_green(),
-	                     rgba_unused.get_blue() );
+	cr ->set_source_rgb( GDK_RGBA_COMPONENTS( color_unused ) );
 	cr ->rectangle( X_START +BORDER +USED, BORDER, UNUSED, 34 );
 	cr ->fill();
 		
@@ -415,9 +406,7 @@ void Frame_Resizer_Base::Draw_Resize_Grip( const Cairo::RefPtr<Cairo::Context>& 
 	}
 	
 	//attach resize arrows to the partition
-	cr ->set_source_rgb( rgba_arrow_rectangle.get_red(),
-	                     rgba_arrow_rectangle.get_green(),
-	                     rgba_arrow_rectangle.get_blue() );
+	cr ->set_source_rgb( GDK_RGBA_COMPONENTS( color_arrow_rectangle ) );
 	cr ->rectangle(
 				 arrow_type == ARROW_LEFT ? X_START - GRIPPER : X_END +1,
 				 5,
@@ -425,9 +414,7 @@ void Frame_Resizer_Base::Draw_Resize_Grip( const Cairo::RefPtr<Cairo::Context>& 
 				 40 ) ;
 	cr ->stroke();
 	
-	cr ->set_source_rgb( rgba_arrow.get_red(),
-	                     rgba_arrow.get_green(),
-	                     rgba_arrow.get_blue() );
+	cr ->set_source_rgb( GDK_RGBA_COMPONENTS( color_arrow ) );
 	cr ->move_to( arrow_points[0].get_x(), arrow_points[0].get_y() );
 	cr ->line_to( arrow_points[1].get_x(), arrow_points[1].get_y() );
 	cr ->line_to( arrow_points[2].get_x(), arrow_points[2].get_y() );

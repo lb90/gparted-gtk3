@@ -56,8 +56,10 @@ public:
 	~OptionComboBox();
 
 	void append(const Glib::ustring & text, bool sensitive = true);
-	std::vector< Row > items();
+	void erase( const Row & );
 	void clear();
+	
+	std::vector< Row > items();
 	
 	Glib::ustring get_active_text(); /*TODO make const */
 	int           get_active_index(); /*TODO make const */

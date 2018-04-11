@@ -174,7 +174,7 @@ void Dialog_Base_Partition::prepare_new_partition()
 		new_partition->sector_end = START + total_length - 1;
 
 	//set alignment
-	switch ( combo_alignment .get_active() )
+	switch ( combo_alignment .get_active_index() )
 	{
 		case 0:
 			new_partition->alignment = ALIGN_CYLINDER;

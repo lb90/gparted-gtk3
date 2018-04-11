@@ -58,8 +58,8 @@ void Dialog_Partition_New::set_data( const Device & device,
 
 	// Copy only supported file systems, excluding LUKS, from GParted_Core FILESYSTEMS
 	// vector.  Add FS_CLEARED, FS_UNFORMATTED and FS_EXTENDED at the end.  This
-	// decides the order of items in the file system menu built by
-	// Build_Filesystems_Menu().
+	// decides the order of items in the file system combo built by
+	// Build_Filesystems_Combo().
 	this->FILESYSTEMS.clear();
 	for ( unsigned i = 0 ; i < FILESYSTEMS.size() ; i ++ )
 	{
@@ -143,11 +143,11 @@ void Dialog_Partition_New::set_data( const Device & device,
 	table_create .attach( * Utils::mk_label( static_cast<Glib::ustring>( _("File system:") ) + "\t" ),
 	                      0, 1, 2, 3, Gtk::FILL );
 
-	Build_Filesystems_Menu( device.readonly );
+	Build_Filesystems_Combo( device.readonly );
 
-	optioncombo_filesystem .signal_changed() .connect( 
+	combo_filesystem .signal_changed() .connect( 
 		sigc::bind<bool>( sigc::mem_fun( *this, &Dialog_Partition_New::combo_changed ), false ) );
-	table_create .attach( optioncombo_filesystem, 1, 2, 2, 3, Gtk::FILL );
+	table_create .attach( combo_filesystem, 1, 2, 2, 3, Gtk::FILL );
 
 	//Label
 	table_create .attach( * Utils::mk_label( Glib::ustring( _("Label:") ) ),
@@ -166,7 +166,7 @@ void Dialog_Partition_New::set_data( const Device & device,
 	MB_PER_PIXEL = TOTAL_MB / 500.00 ;
 	
 	//set first enabled file system
-	combo_filesystem .set_history( first_creatable_fs ) ;
+	combo_filesystem .set_active( first_creatable_fs ) ;
 	combo_changed( false ) ;
 	
 	//set spinbuttons initial values
@@ -192,7 +192,7 @@ const Partition & Dialog_Partition_New::Get_New_Partition()
 	PartitionType part_type ;
 	Sector new_start, new_end;
 		
-	switch ( combo_type .get_history() )
+	switch ( combo_type .get_active_index() )
 	{
 		case 0	:	part_type = GParted::TYPE_PRIMARY;  break;
 		case 1	:	part_type = GParted::TYPE_LOGICAL;  break;
@@ -231,7 +231,7 @@ const Partition & Dialog_Partition_New::Get_New_Partition()
 	new_partition->Set( device_path,
 	                    String::ucompose( _("New Partition #%1"), new_count ),
 	                    new_count, part_type,
-	                    FILESYSTEMS[combo_filesystem.get_history()].filesystem,
+	                    FILESYSTEMS[combo_filesystem.get_active_index()].filesystem,
 	                    new_start, new_end,
 	                    sector_size,
 	                    inside_extended, false );
@@ -244,7 +244,7 @@ const Partition & Dialog_Partition_New::Get_New_Partition()
 	new_partition->set_filesystem_label( Utils::trim( filesystem_label_entry.get_text() ) );
 
 	//set alignment
-	switch ( combo_alignment .get_history() )
+	switch ( combo_alignment .get_active_index() )
 	{
 		case 0:
 			new_partition->alignment = ALIGN_CYLINDER;
@@ -316,27 +316,27 @@ void Dialog_Partition_New::combo_changed( bool type )
 	//combo_type
 	if ( type )
 	{
-		if ( combo_type .get_history() == GParted::TYPE_EXTENDED &&
+		if ( combo_type .get_active_index() == GParted::TYPE_EXTENDED &&
 		     combo_filesystem .items() .size() < FILESYSTEMS .size() )
 		{
 			combo_filesystem .append( 
 				Utils::get_filesystem_string( GParted::FS_EXTENDED ) ) ;
-			combo_filesystem .set_history( menu_filesystem .items() .size() -1 ) ;
+			combo_filesystem .set_active( combo_filesystem .items() .size() -1 ) ;
 			combo_filesystem .set_sensitive( false ) ;
 		}
-		else if ( combo_type .get_history() != GParted::TYPE_EXTENDED &&
+		else if ( combo_type .get_active_index() != GParted::TYPE_EXTENDED &&
 			  combo_filesystem .items() .size() == FILESYSTEMS .size() ) 
 		{
-			combo_filesystem .pop() ;
+			combo_filesystem .remove(combo_filesystem .items() .back()) ;
 			combo_filesystem .set_sensitive( true ) ;
-			combo_filesystem .set_history( first_creatable_fs ) ;
+			combo_filesystem .set_active( first_creatable_fs ) ;
 		}
 	}
 	
 	//combo_filesystem and combo_alignment
 	if ( ! type )
 	{
-		fs = FILESYSTEMS[ combo_filesystem .get_history() ] ;
+		fs = FILESYSTEMS[ combo_filesystem .get_active_index() ] ;
 		fs_limits = GParted_Core::get_filesystem_limits( fs.filesystem, *new_partition );
 
 		if ( fs_limits.min_size < MEBIBYTE )
@@ -370,7 +370,7 @@ void Dialog_Partition_New::combo_changed( bool type )
 	{
 		Gdk::RGBA color_temp;
 		//Background color
-		color_temp.set((combo_type.get_history() == 2) ? "darkgrey" : "white");
+		color_temp.set((combo_type.get_active_index() == 2) ? "darkgrey" : "white");
 		frame_resizer_base->override_default_rgb_unused_color(color_temp);
 
 		//Partition color
@@ -384,12 +384,13 @@ void Dialog_Partition_New::combo_changed( bool type )
 	frame_resizer_base ->Queue_Draw() ;
 }
 
-void Dialog_Partition_New::Build_Filesystems_Menu( bool only_unformatted ) 
+void Dialog_Partition_New::Build_Filesystems_Combo( bool only_unformatted ) 
 {
 	g_assert( new_partition != NULL );  // Bug: Not initialised by constructor calling set_data()
+	combo_filesystem.clear();
 
 	bool set_first=false;
-	//fill the file system menu with the file systems (except for extended) 
+	//fill the file system combo with the file systems (except for extended) 
 	for ( unsigned int t = 0 ; t < FILESYSTEMS .size( ) ; t++ ) 
 	{
 		//skip extended

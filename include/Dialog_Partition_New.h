@@ -49,7 +49,7 @@ private:
 	               bool any_extended,
 	               unsigned short new_count,
 	               const std::vector<FS> & FILESYSTEMS );
-	void Build_Filesystems_Menu( bool only_unformatted ) ;
+	void Build_Filesystems_Combo( bool only_unformatted ) ;
 	Byte_Value get_filesystem_min_limit( FSType fstype );
 
 	Gtk::Table table_create;

@@ -119,18 +119,14 @@ Dialog_Partition_Info::Dialog_Partition_Info( const Partition & partition ) : pa
 
 bool Dialog_Partition_Info::drawingarea_on_draw( const Cairo::RefPtr<Cairo::Context>& cr )
 {
-	cr ->set_source_rgb( rgba_partition.get_red(),
-	                     rgba_partition.get_green(),
-	                     rgba_partition.get_blue() );
+	cr ->set_source_rgb( GDK_RGBA_COMPONENTS( color_partition) );
 	cr ->rectangle(0, 0, 400, 60);
 	cr ->fill();
 
 	if ( partition.filesystem != FS_UNALLOCATED )
 	{
 		//used
-		cr ->set_source_rgb( rgba_used.get_red(),
-		                     rgba_used.get_green(),
-		                     rgba_used.get_blue() );
+		cr ->set_source_rgb( GDK_RGBA_COMPONENTS( color_used ) );
 		cr ->rectangle( BORDER,
 		                BORDER,
 		                used,
@@ -138,9 +134,7 @@ bool Dialog_Partition_Info::drawingarea_on_draw( const Cairo::RefPtr<Cairo::Cont
 		cr ->fill( );
 		
 		//unused
-		cr ->set_source_rgb( rgba_unused.get_red(),
-		                     rgba_unused.get_green(),
-		                     rgba_unused.get_blue() );
+		cr ->set_source_rgb( GDK_RGBA_COMPONENTS( color_unused ) );
 		cr ->rectangle( BORDER + used,
 		                BORDER,
 		                unused,
@@ -148,9 +142,7 @@ bool Dialog_Partition_Info::drawingarea_on_draw( const Cairo::RefPtr<Cairo::Cont
 		cr ->fill( );
 
 		//unallocated
-		cr ->set_source_rgb( rgba_unallocated.get_red(),
-		                     rgba_unallocated.get_green(),
-		                     rgba_unallocated.get_blue() );
+		cr ->set_source_rgb( GDK_RGBA_COMPONENTS( color_unallocated ) );
 		cr ->rectangle( BORDER + used + unused,
 		                BORDER,
 		                unallocated,
@@ -159,9 +151,7 @@ bool Dialog_Partition_Info::drawingarea_on_draw( const Cairo::RefPtr<Cairo::Cont
 	}
 	
 	//text
-	cr ->set_source_rgb( rgba_text.get_red(),
-	                     rgba_text.get_green(),
-	                     rgba_text.get_blue() );
+	cr ->set_source_rgb( GDK_RGBA_COMPONENTS( color_text ) );
 	cr ->move_to( 180, BORDER + 6 ) ; /*TODO*/
 	pango_layout->show_in_cairo_context(cr);
 	
@@ -203,12 +193,12 @@ void Dialog_Partition_Info::init_drawingarea()
 		unallocated = 0 ;
 	}
 	
-	//allocate some colors
-	rgba_used.set( "#F8F8BA" );
-	rgba_unused .set( "white" ) ;
-	rgba_unallocated .set( "darkgrey" ) ;
-	rgba_text .set( "black" );
-	rgba_partition.set( Utils::get_color( partition.get_filesystem_partition().filesystem ) ); 
+	//set some colors
+	color_used.set( "#F8F8BA" );
+	color_unused .set( "white" ) ;
+	color_unallocated .set( "darkgrey" ) ;
+	color_text .set( "black" );
+	color_partition.set( Utils::get_color( partition.get_filesystem_partition().filesystem ) ); 
 	
 	//set text of pangolayout
 	pango_layout = drawingarea .create_pango_layout( 
