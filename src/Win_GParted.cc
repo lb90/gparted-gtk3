@@ -1616,17 +1616,32 @@ void Win_GParted::show_help_dialog( const Glib::ustring & filename /* E.g., gpar
 	{
 		//Try opening yelp application directly
 		g_clear_error( &error );  // Clear error from trying to open gparted help manual above (gtk_show_uri).
-		Glib::ustring command = "yelp " + uri ;
 		
-		Glib::RefPtr<Gdk::AppLaunchContext> context = Gdk::AppLaunchContext::create();
+		// TODO
+		// 
+		// we can make use of g_desktop_app_info_new () to launch yelp from the desktop file
+		// as written there: https://developer.gnome.org/gtk3/stable/gtk-migrating-2-to-3.html#id-1.6.3.3.7
+		// like:
+		// 
+		// Glib::RefPtr<Gio::DesktopAppInfo> yelp
+		//       = Gio::DesktopAppInfo::create("org.gnome.yelp");
+		//
+		Glib::RefPtr<Gio::AppInfo> yelp
+		      = Gio::AppInfo::create_from_commandline("", "yelp", Gio::APP_INFO_CREATE_SUPPORTS_URIS);
+		// 
+		
+		Glib::RefPtr<Gdk::AppLaunchContext> context
+		      = Gdk::AppLaunchContext::create();
+
 		context ->set_screen ( get_window() ->get_screen () ) ;
 		context ->set_timestamp ( gtk_get_current_event_time () );
 
-		/*TODO: use _async version, but you should also check for errors */
-		bool launch_ok;
-		launch_ok = Gio::AppInfo::launch_default_for_uri ( command, context ) ;
+		// TODO
+		// best to use _async version, but we must also check for errors
+		bool launched;
+		launched = yelp ->launch_uris ( std::vector<std::string> {uri}, context ) ;
 		
-		if (! launch_ok)
+		if (! launched)
 		{
 			Gtk::MessageDialog dialog( *this
 			                         , _( "Unable to open GParted Manual help file" )
