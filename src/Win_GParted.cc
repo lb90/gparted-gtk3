@@ -1605,36 +1605,43 @@ void Win_GParted::show_help_dialog( const Glib::ustring & filename /* E.g., gpar
                                   )
 {
 	GError *error = NULL ;
-	GdkScreen *gscreen = NULL ;
 
 	Glib::ustring uri = "ghelp:" + filename ;
 	if (link_id .size() > 0 ) {
 		uri = uri + "?" + link_id ;
 	}
 
-	gscreen = gdk_screen_get_default() ;
-
-	gtk_show_uri( gscreen, uri .c_str(), gtk_get_current_event_time(), &error ) ;
+	gtk_show_uri_on_window( Gtk::Window::gobj(), uri .c_str(), gtk_get_current_event_time(), &error ) ;
 	if ( error != NULL )
 	{
 		//Try opening yelp application directly
 		g_clear_error( &error );  // Clear error from trying to open gparted help manual above (gtk_show_uri).
 		Glib::ustring command = "yelp " + uri ;
-		gdk_spawn_command_line_on_screen( gscreen, command .c_str(), &error ) ;
+		
+		Glib::RefPtr<Gdk::AppLaunchContext> context = Gdk::AppLaunchContext::create();
+		context ->set_screen ( get_window() ->get_screen () ) ;
+		context ->set_timestamp ( gtk_get_current_event_time () );
+
+		/*TODO: use _async verson, but you should also check for errors */
+		bool launch_ok;
+		launch_ok = Gio::AppInfo::launch_default_for_uri ( command, context ) ;
+		
+		if (! launch_ok)
+		{
+			Gtk::MessageDialog dialog( *this
+			                         , _( "Unable to open GParted Manual help file" )
+			                         , false
+			                         , Gtk::MESSAGE_ERROR
+			                         , Gtk::BUTTONS_OK
+			                         , true
+			                         ) ;
+			dialog .set_secondary_text( error ->message ) ;
+			dialog .run() ;
+		}
 	}
 
-	if ( error != NULL )
-	{
-		Gtk::MessageDialog dialog( *this
-		                         , _( "Unable to open GParted Manual help file" )
-		                         , false
-		                         , Gtk::MESSAGE_ERROR
-		                         , Gtk::BUTTONS_OK
-		                         , true
-		                         ) ;
-		dialog .set_secondary_text( error ->message ) ;
-		dialog .run() ;
-	}
+		
+
 }
 
 void Win_GParted::menu_help_contents()
