@@ -213,14 +213,12 @@ void Dialog_Rescue_Data::on_view_clicked(int nPart)
 /* Opens the default browser in a directory */
 void Dialog_Rescue_Data::open_ro_view(Glib::ustring mountPoint)
 {
+	/*TODO free error */
 	GError *error = NULL ;
-	GdkScreen *gscreen = NULL ;
 
 	Glib::ustring uri = "file:" + mountPoint ;
 
-	gscreen = gdk_screen_get_default() ;
-
-	gtk_show_uri( gscreen, uri .c_str(), gtk_get_current_event_time(), &error ) ;
+	gtk_show_uri_on_window( Gtk::Window::gobj(), uri .c_str(), gtk_get_current_event_time(), &error ) ;
 
 	if ( error != NULL )
 	{

@@ -456,12 +456,13 @@ void Win_GParted::create_format_menu_add_item( FSType filesystem, bool activate 
 	hbox ->pack_start( * Utils::mk_label( " " + Utils::get_filesystem_string( filesystem ) ),
 	                   Gtk::PACK_SHRINK ) ;
 
-	menu ->append( * manage( new Gtk::MenuItem( *hbox ) ) ) ;
+	Gtk::MenuItem *item = manage( new Gtk::MenuItem( *hbox ) );
+	menu ->append( * item ) ;
 	if ( activate )
-		menu ->items() .back() .signal_activate() .connect(
+		item ->signal_activate() .connect(
 			sigc::bind<FSType>( sigc::mem_fun( *this, &Win_GParted::activate_format ), filesystem ) );
 	else
-		menu ->items() .back() .set_sensitive( false ) ;
+		item ->set_sensitive( false ) ;
 }
 
 void Win_GParted::init_device_info()
@@ -618,18 +619,19 @@ void Win_GParted::refresh_combo_devices()
 		hbox ->pack_start( * Utils::mk_label( "   (" + Utils::format_size( devices[ i ] .length, devices[ i ] .sector_size ) + ")" ),
 		                   Gtk::PACK_SHRINK ) ;
 
-		menu ->append( * manage( new Gtk::RadioMenuItem( radio_group ) ) ) ;
-		menu ->items() .back() .add( *hbox ) ;
-		menu ->items() .back() .signal_activate() .connect( 
+		Gtk::RadioMenuItem *item = manage( new Gtk::RadioMenuItem( radio_group ) )
+		menu ->append( * item ) ;
+		item ->add( *hbox ) ;
+		item ->signal_activate() .connect( 
 			sigc::bind<unsigned int>( sigc::mem_fun(*this, &Win_GParted::radio_devices_changed), i ) ) ;
 	}
 				
-	menubar_main .items()[ 0 ] .get_submenu() ->items()[ 1 ] .remove_submenu() ;
+	menu_main_items[MENU_DEVICES] ->remove_submenu() ;
 
-	if ( menu ->items() .size() )
+	if ( menu ->get_children() .size() ) /*TODO sucks */
 	{
 		menu ->show_all() ;
-		menubar_main .items()[ 0 ] .get_submenu() ->items()[ 1 ] .set_submenu( *menu ) ;
+		menu_main_items[MENU_DEVICES] .set_submenu( *menu ) ;
 	}
 
 	combo_devices_changed_connection .unblock();
@@ -1057,11 +1059,11 @@ void Win_GParted::set_valid_operations()
 	allow_name_partition( false ); allow_manage_flags( false ); allow_check( false );
 	allow_label_filesystem( false ); allow_change_uuid( false ); allow_info( false );
 
-	dynamic_cast<Gtk::Label*>( menu_partition .items()[ MENU_TOGGLE_BUSY ] .get_child() )
+	dynamic_cast<Gtk::Label*>( menu_partition_items[MENU_TOGGLE_BUSY] ->get_child() )
 		->set_label( FileSystem::get_generic_text ( CTEXT_DEACTIVATE_FILESYSTEM ) ) ;
 
-	menu_partition .items()[ MENU_TOGGLE_BUSY ] .show() ;
-	menu_partition .items()[ MENU_MOUNT ] .hide() ;	
+	menu_partition_items[ MENU_TOGGLE_BUSY ] .show() ;
+	menu_partition_items[ MENU_MOUNT ] .hide() ;	
 
 	// No partition selected ...
 	if ( ! selected_partition_ptr )
@@ -1081,12 +1083,12 @@ void Win_GParted::set_valid_operations()
 	// Set an appropriate name for the activate/deactivate menu item.
 	const FileSystem * filesystem_object = gparted_core.get_filesystem_object( selected_filesystem.filesystem );
 	if ( filesystem_object )
-		dynamic_cast<Gtk::Label*>( menu_partition .items()[ MENU_TOGGLE_BUSY ] .get_child() )
+		dynamic_cast<Gtk::Label*>( menu_partition_items[MENU_TOGGLE_BUSY] ->get_child() )
 			->set_label( filesystem_object->get_custom_text(   selected_filesystem.busy
 			                                                 ? CTEXT_DEACTIVATE_FILESYSTEM
 			                                                 : CTEXT_ACTIVATE_FILESYSTEM ) );
 	else
-		dynamic_cast<Gtk::Label*>( menu_partition .items()[ MENU_TOGGLE_BUSY ] .get_child() )
+		dynamic_cast<Gtk::Label*>( menu_partition_items[MENU_TOGGLE_BUSY] ->get_child() )
 			->set_label( FileSystem::get_generic_text (  selected_filesystem.busy
 			                                           ? CTEXT_DEACTIVATE_FILESYSTEM
 			                                           : CTEXT_ACTIVATE_FILESYSTEM )
@@ -1293,7 +1295,7 @@ void Win_GParted::set_valid_operations()
 		     selected_filesystem.filesystem != FS_LUKS    &&
 		     selected_filesystem.get_mountpoints().size()    )
 		{
-			menu = menu_partition .items()[ MENU_MOUNT ] .get_submenu() ;
+			menu = menu_partition_items[MENU_MOUNT] ->get_submenu() ;
 			menu ->items() .clear() ;
 			std::vector<Glib::ustring> temp_mountpoints = selected_filesystem.get_mountpoints();
 			for ( unsigned int t = 0 ; t < temp_mountpoints.size() ; t++ )
@@ -1306,8 +1308,8 @@ void Win_GParted::set_valid_operations()
 				dynamic_cast<Gtk::Label*>( menu ->items() .back() .get_child() ) ->set_use_underline( false ) ;
 			}
 
-			menu_partition .items()[ MENU_TOGGLE_BUSY ] .hide() ;
-			menu_partition .items()[ MENU_MOUNT ] .show() ;	
+			menu_partition_items[MENU_TOGGLE_BUSY] ->hide() ;
+			menu_partition_items[MENU_MOUNT] ->show() ;	
 		}
 
 		// See if there is a partition to be copied and it fits inside this selected partition
@@ -1360,7 +1362,7 @@ void Win_GParted::open_operationslist()
 				Gtk::Main::iteration() ;
 		}
 
-		static_cast<Gtk::CheckMenuItem *>( & menubar_main .items()[ 2 ] .get_submenu() ->items()[ 1 ] )
+		static_cast<Gtk::CheckMenuItem *>( menu_main_items[MENU_VIEW_OPERATIONS] )
 			->set_active( true ) ;
 	}
 }
@@ -1381,7 +1383,7 @@ void Win_GParted::close_operationslist()
 		
 		hbox_operations .hide() ;
 
-		static_cast<Gtk::CheckMenuItem *>( & menubar_main .items()[ 2 ] .get_submenu() ->items()[ 1 ] )
+		static_cast<Gtk::CheckMenuItem *>( menu_main_items[MENU_VIEW_OPERATIONS] )
 			->set_active( false ) ;
 	}
 }
@@ -1414,15 +1416,13 @@ void Win_GParted::combo_devices_changed()
 	//uodate radiobuttons..
 	if ( menubar_main .items()[ 0 ] .get_submenu() ->items()[ 1 ] .get_submenu() )
 		static_cast<Gtk::RadioMenuItem *>( 
-			& menubar_main .items()[ 0 ] .get_submenu() ->items()[ 1 ] .get_submenu() ->
-			items()[ current_device ] ) ->set_active( true ) ;
+			menu_main_items[MENU_DEVICES] ->get_submenu() ->get_children()[current_device]) ->set_active( true ) ;
 }
 
 void Win_GParted::radio_devices_changed( unsigned int item ) 
 {
-	if ( static_cast<Gtk::RadioMenuItem *>( 
-	     	& menubar_main .items()[ 0 ] .get_submenu() ->items()[ 1 ] .get_submenu() ->
-		items()[ item ] ) ->get_active() )
+	if ( static_cast<Gtk::RadioMenuItem *>( /*TODO sucks */
+	     	menu_main_items[MENU_DEVICES] ->get_submenu() ->get_children()[item]) ->get_active() )
 	{
 		combo_devices .set_active( item ) ;
 	}
@@ -1480,11 +1480,11 @@ void Win_GParted::menu_gparted_refresh_devices()
 		this ->set_title( _("GParted") );
 		combo_devices .hide() ;
 		
-		menubar_main .items()[ 0 ] .get_submenu() ->items()[ 1 ] .set_sensitive( false ) ;
-		menubar_main .items()[ 1 ] .set_sensitive( false ) ;
-		menubar_main .items()[ 2 ] .set_sensitive( false ) ;
-		menubar_main .items()[ 3 ] .set_sensitive( false ) ;
-		menubar_main .items()[ 4 ] .set_sensitive( false ) ;
+		menu_main_items[MENU_DEVICES] ->set_sensitive( false ) ;
+		menu_main_items[MENU_EDIT] ->set_sensitive( false ) ;
+		menu_main_items[MENU_VIEW] ->set_sensitive( false ) ;
+		menu_main_items[MENU_DEVICE] ->set_sensitive( false ) ;
+		menu_main_items[MENU_PARTITION] ->set_sensitive( false ) ;
 		toolbar_main .set_sensitive( false ) ;
 		drawingarea_visualdisk .set_sensitive( false ) ;
 		treeview_detail .set_sensitive( false ) ;
@@ -1506,11 +1506,11 @@ void Win_GParted::menu_gparted_refresh_devices()
 	{
 		combo_devices .show() ;
 		
-		menubar_main .items()[ 0 ] .get_submenu() ->items()[ 1 ] .set_sensitive( true ) ;
-		menubar_main .items()[ 1 ] .set_sensitive( true ) ;
-		menubar_main .items()[ 2 ] .set_sensitive( true ) ;
-		menubar_main .items()[ 3 ] .set_sensitive( true ) ;
-		menubar_main .items()[ 4 ] .set_sensitive( true ) ;
+		menu_main_items[MENU_DEVICES] ->set_sensitive( true ) ;
+		menu_main_items[MENU_EDIT] ->set_sensitive( true ) ;
+		menu_main_items[MENU_VIEW] ->set_sensitive( true ) ;
+		menu_main_items[MENU_DEVICE] ->set_sensitive( true ) ;
+		menu_main_items[MENU_PARTITION] ->set_sensitive( true ) ;
 
 		toolbar_main .set_sensitive( true ) ;
 		drawingarea_visualdisk .set_sensitive( true ) ;
@@ -1536,9 +1536,9 @@ void Win_GParted::menu_gparted_features()
 		dialog .load_filesystems( gparted_core .get_filesystems() ) ;
 
 		//recreate format menu...
-		menu_partition .items()[ MENU_FORMAT ] .remove_submenu() ;
-		menu_partition .items()[ MENU_FORMAT ] .set_submenu( * create_format_menu() ) ;
-		menu_partition .items()[ MENU_FORMAT ] .get_submenu() ->show_all_children() ;
+		menu_partition_items[ MENU_FORMAT ] ->remove_submenu() ;
+		menu_partition_items[ MENU_FORMAT ] ->set_submenu( * create_format_menu() ) ;
+		menu_partition_items[ MENU_FORMAT ] ->get_submenu() ->show_all_children() ;
 	}
 }
 
@@ -1550,7 +1550,7 @@ void Win_GParted::menu_gparted_quit()
 
 void Win_GParted::menu_view_harddisk_info()
 { 
-	if ( static_cast<Gtk::CheckMenuItem *>( & menubar_main .items()[ 2 ] .get_submenu() ->items()[ 0 ] ) ->get_active() )
+	if ( static_cast<Gtk::CheckMenuItem *>( menu_main_items[MENU_VIEW_DEVICE_INFORMATIONS] ) ->get_active() )
 	{	//open harddisk information
 		hpaned_main .get_child1() ->show() ;		
 		for ( int t = hpaned_main .get_position() ; t < 250 ; t += 15 )
@@ -1574,7 +1574,7 @@ void Win_GParted::menu_view_harddisk_info()
 
 void Win_GParted::menu_view_operations()
 {
-	if ( static_cast<Gtk::CheckMenuItem *>( & menubar_main .items()[ 2 ] .get_submenu() ->items()[ 1 ] ) ->get_active() )
+	if ( static_cast<Gtk::CheckMenuItem *>( menu_main_items[MENU_VIEW_OPERATIONS] ) ->get_active() )
 		open_operationslist() ;
 	else 
 		close_operationslist() ;
