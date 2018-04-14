@@ -190,7 +190,7 @@ void Win_GParted::init_menubar()
 
 	item = Gtk::manage( new GParted::Menu_Helpers::ImageMenuElem( 
 		_("_Apply All Operations"),
-		Gtk::AccelKey(GDK_Return, Gdk::CONTROL_MASK),
+		Gtk::AccelKey(GDK_KEY_Return, Gdk::CONTROL_MASK),
 		* Gtk::manage( new Gtk::Image( Gtk::Stock::APPLY, Gtk::ICON_SIZE_MENU ) ), 
 		sigc::mem_fun(*this, &Win_GParted::activate_apply) ) );
 	menu ->append( * item );
@@ -359,7 +359,7 @@ void Win_GParted::init_partition_menu()
 	image = Gtk::manage( new Gtk::Image( Gtk::Stock::NEW, Gtk::ICON_SIZE_MENU ) );
 	item = Gtk::manage( new GParted::Menu_Helpers::ImageMenuElem(
 	                      _("_New"),
-	                      Gtk::AccelKey( GDK_Insert, Gdk::BUTTON1_MASK),
+	                      Gtk::AccelKey( GDK_KEY_Insert, Gdk::BUTTON1_MASK),
 	                      * image,
 	                      sigc::mem_fun(*this, &Win_GParted::activate_new) ) );
 	menu_partition .append( * item );
@@ -368,7 +368,7 @@ void Win_GParted::init_partition_menu()
 	
 	item = Gtk::manage( new GParted::Menu_Helpers::StockMenuElem(
 	                      Gtk::Stock::DELETE, 
-	                      Gtk::AccelKey( GDK_Delete, Gdk::BUTTON1_MASK ),
+	                      Gtk::AccelKey( GDK_KEY_Delete, Gdk::BUTTON1_MASK ),
 	                      sigc::mem_fun(*this, &Win_GParted::activate_delete) ) );
 	menu_partition .append( * item );		
 
