@@ -688,7 +688,7 @@ void Win_GParted::refresh_combo_devices()
 			sigc::bind<unsigned int>( sigc::mem_fun(*this, &Win_GParted::radio_devices_changed), i ) ) ;
 	}
 				
-	menu_main_items[MENU_DEVICES] ->remove_submenu() ;
+	menu_main_items[MENU_DEVICES] ->unset_submenu() ;
 
 	if ( menu ->get_children() .size() ) /*TODO sucks */
 	{
@@ -1598,7 +1598,7 @@ void Win_GParted::menu_gparted_features()
 		dialog .load_filesystems( gparted_core .get_filesystems() ) ;
 
 		//recreate format menu...
-		menu_partition_items[ MENU_FORMAT ] ->remove_submenu() ;
+		menu_partition_items[ MENU_FORMAT ] ->unset_submenu() ;
 		menu_partition_items[ MENU_FORMAT ] ->set_submenu( * create_format_menu() ) ;
 		menu_partition_items[ MENU_FORMAT ] ->get_submenu() ->show_all_children() ;
 	}
