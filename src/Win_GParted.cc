@@ -48,6 +48,7 @@
 #include <gtkmm/aboutdialog.h>
 #include <gtkmm/messagedialog.h>
 #include <gtkmm/radiobuttongroup.h>
+#include <gtkmm/radiomenuitem.h>
 #include <gtkmm/main.h>
 #include <gtkmm/separator.h>
 #include <glibmm/ustring.h>
@@ -681,7 +682,7 @@ void Win_GParted::refresh_combo_devices()
 		hbox ->pack_start( * Utils::mk_label( "   (" + Utils::format_size( devices[ i ] .length, devices[ i ] .sector_size ) + ")" ),
 		                   Gtk::PACK_SHRINK ) ;
 
-		Gtk::RadioMenuItem *item = manage( new Gtk::RadioMenuItem( radio_group ) )
+		Gtk::RadioMenuItem *item = Gtk::manage( new Gtk::RadioMenuItem( radio_group ) )
 		menu ->append( * item ) ;
 		item ->add( *hbox ) ;
 		item ->signal_activate() .connect( 
