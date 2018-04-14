@@ -45,6 +45,7 @@
 #include "Utils.h"
 #include "../config.h"
 
+#include <glibmm/main.h>
 #include <gtkmm/aboutdialog.h>
 #include <gtkmm/messagedialog.h>
 #include <gtkmm/radiobuttongroup.h>
@@ -694,7 +695,7 @@ void Win_GParted::refresh_combo_devices()
 	if ( menu ->get_children() .size() ) /*TODO sucks */
 	{
 		menu ->show_all() ;
-		menu_main_items[MENU_DEVICES] .set_submenu( *menu ) ;
+		menu_main_items[MENU_DEVICES] ->set_submenu( *menu ) ;
 	}
 
 	combo_devices_changed_connection .unblock();
@@ -1125,8 +1126,8 @@ void Win_GParted::set_valid_operations()
 	dynamic_cast<Gtk::Label*>( menu_partition_items[MENU_TOGGLE_BUSY] ->get_child() )
 		->set_label( FileSystem::get_generic_text ( CTEXT_DEACTIVATE_FILESYSTEM ) ) ;
 
-	menu_partition_items[ MENU_TOGGLE_BUSY ] .show() ;
-	menu_partition_items[ MENU_MOUNT ] .hide() ;	
+	menu_partition_items[ MENU_TOGGLE_BUSY ] ->show() ;
+	menu_partition_items[ MENU_MOUNT ] ->hide() ;	
 
 	// No partition selected ...
 	if ( ! selected_partition_ptr )
