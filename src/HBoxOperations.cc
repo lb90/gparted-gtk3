@@ -15,6 +15,7 @@
  */
 
 #include "HBoxOperations.h"
+#include "MenuHelpers.h"
 
 #include <gtkmm/stock.h>
 
@@ -40,27 +41,34 @@ HBoxOperations::HBoxOperations()
 	pack_start( scrollwindow, Gtk::PACK_EXPAND_WIDGET );
 
 	//create popupmenu
-	menu_popup_items[0] = Gtk::manage(  );
-	menu_popup .append( Gtk::Menu_Helpers::ImageMenuElem( 
+	Gtk::MenuItem *item;
+	item = manage( new GParted::Menu_Helpers::ImageMenuElem( 
 		_("_Undo Last Operation"), 
 		* manage( new Gtk::Image( Gtk::Stock::UNDO, Gtk::ICON_SIZE_MENU ) ), 
 		sigc::mem_fun(*this, &HBoxOperations::on_undo) ) );
+	menu_popup .append( *item );
 
-	menu_popup_items[1] = Gtk::manage(  );
-	menu_popup .append( Gtk::Menu_Helpers::ImageMenuElem( 
+	menu_popup_items[0] = item;
+
+	item = manage( new GParted::Menu_Helpers::ImageMenuElem( 
 		_("_Clear All Operations"), 
 		* manage( new Gtk::Image( Gtk::Stock::CLEAR, Gtk::ICON_SIZE_MENU ) ), 
 		sigc::mem_fun(*this, &HBoxOperations::on_clear) ) );
+	menu_popup .append( *item );
 
-	menu_popup_items[2] = Gtk::manage(  );
-	menu_popup .append( Gtk::Menu_Helpers::ImageMenuElem( 
+	menu_popup_items[1] = item;
+
+	item = manage( new GParted::Menu_Helpers::ImageMenuElem( 
 		_("_Apply All Operations"), 
 		* manage( new Gtk::Image( Gtk::Stock::APPLY, Gtk::ICON_SIZE_MENU ) ), 
 		sigc::mem_fun(*this, &HBoxOperations::on_apply) ) );
+	menu_popup .append( *item );
 
-	menu_popup .append( Gtk::Menu_Helpers::SeparatorElem() );
-	menu_popup .append( Gtk::Menu_Helpers::StockMenuElem( 
-		Gtk::Stock::CLOSE, sigc::mem_fun(*this, &HBoxOperations::on_close) ) );
+	menu_popup_items[2] = item;
+
+	menu_popup .append( * manage( new GParted::Menu_Helpers::SeparatorElem() ) );
+	menu_popup .append( * manage( new GParted::Menu_Helpers::StockMenuElem( 
+		Gtk::Stock::CLOSE, sigc::mem_fun(*this, &HBoxOperations::on_close) ) ) );
 }
 
 void HBoxOperations::load_operations( const std::vector<Operation *> operations ) 

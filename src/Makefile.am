@@ -55,6 +55,7 @@ gpartedbin_SOURCES = \
 	Proc_Partitions_Info.cc		\
 	ProgressBar.cc			\
 	OptionComboBox.cc		\
+	MenuHelpers.cc			\
 	SWRaid_Info.cc			\
 	TreeView_Detail.cc		\
 	Utils.cc			\
