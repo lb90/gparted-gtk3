@@ -119,6 +119,7 @@ void Dialog_Partition_New::set_data( const Device & device,
 		combo_type .items()[ 1 ] .set_sensitive( false ); 
 		if ( any_extended )
 			combo_type .items()[ 2 ] .set_sensitive( false );
+		combo_type .set_active( 0 );
 	}
 	
 	//160 is the ideal width for this table column.

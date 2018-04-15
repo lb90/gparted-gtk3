@@ -222,7 +222,7 @@ void Dialog_Progress::on_signal_show()
 		operations[ t ] ->operation_detail .set_status( STATUS_EXECUTE ) ;
 
 		//set focus...
-		treeview_operations .set_cursor( static_cast<Gtk::TreePath>( treerow ) ) ;
+		treeview_operations .set_cursor( Gtk::TreePath( treerow ) ) ;
 		
 		succes = signal_apply_operation.emit( operations[t] );
 
