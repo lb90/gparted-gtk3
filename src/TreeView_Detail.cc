@@ -38,7 +38,8 @@ TreeView_Detail::TreeView_Detail()
 	set_model( treestore_detail );
 	set_rules_hint( true );
 	treeselection = get_selection();
-	treeselection ->signal_changed() .connect( sigc::mem_fun( *this, &TreeView_Detail::on_selection_changed ) );
+	selection_changed_connection =
+		treeselection ->signal_changed() .connect( sigc::mem_fun( *this, &TreeView_Detail::on_selection_changed ) );
 
 	//append columns
 	append_column( _("Partition"), treeview_detail_columns .path );
@@ -88,7 +89,10 @@ void TreeView_Detail::load_partitions( const PartitionVector & partitions )
 	bool show_mountpoints = false;
 	bool show_labels      = false;
 
+	// Temporarily block the on_selection_changed callback while clearing the treestore
+	selection_changed_connection.block();
 	treestore_detail ->clear() ;
+	selection_changed_connection.unblock();
 
 	load_partitions( partitions, show_names, show_mountpoints, show_labels );
 

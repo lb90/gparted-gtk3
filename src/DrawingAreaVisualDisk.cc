@@ -401,6 +401,7 @@ void DrawingAreaVisualDisk::on_size_allocate( Gtk::Allocation & allocation )
 	calc_position_and_height( visual_partitions, MAIN_BORDER, MAIN_BORDER ) ;//0, 0 ) ;
 	calc_usage( visual_partitions ) ;
 	calc_text( visual_partitions ) ;
+
 	queue_draw();
 }
 

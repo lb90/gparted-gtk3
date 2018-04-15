@@ -66,6 +66,7 @@ private:
 	
 	Glib::RefPtr<Gtk::TreeStore> treestore_detail;
 	Glib::RefPtr<Gtk::TreeSelection> treeselection;
+	sigc::connection selection_changed_connection;
 
 	bool block ;
 
