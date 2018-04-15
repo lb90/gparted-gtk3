@@ -1359,18 +1359,23 @@ void Win_GParted::set_valid_operations()
 		     selected_filesystem.filesystem != FS_LUKS    &&
 		     selected_filesystem.get_mountpoints().size()    )
 		{
-			menu = menu_partition_items[MENU_MOUNT] ->get_submenu() ;
-			menu ->items() .clear() ;
+			menu_partition_items[MENU_MOUNT] ->unset_submenu() ;
+
+			menu = Gtk::manage( new Gtk::Menu() );
 			std::vector<Glib::ustring> temp_mountpoints = selected_filesystem.get_mountpoints();
 			for ( unsigned int t = 0 ; t < temp_mountpoints.size() ; t++ )
 			{
-				menu ->items() .push_back( 
-					GParted::Menu_Helpers::MenuElem( 
+				Gtk::MenuItem *item;
+				
+				item = Gtk::manage( new GParted::Menu_Helpers::MenuElem( 
 						temp_mountpoints[t],
 						sigc::bind<unsigned int>( sigc::mem_fun(*this, &Win_GParted::activate_mount_partition), t ) ) );
+				menu ->append( *item );
 
-				dynamic_cast<Gtk::Label*>( menu ->items() .back() .get_child() ) ->set_use_underline( false ) ;
+				dynamic_cast<Gtk::Label*>( item ->get_child() ) ->set_use_underline( false ) ;
 			}
+			
+			menu_partition_items[MENU_MOUNT] ->set_submenu( * menu ) ;
 
 			menu_partition_items[MENU_TOGGLE_BUSY] ->hide() ;
 			menu_partition_items[MENU_MOUNT] ->show() ;	
@@ -1477,8 +1482,9 @@ void Win_GParted::combo_devices_changed()
 	//rebuild visualdisk and treeview
 	Refresh_Visual();
 	
-	//uodate radiobuttons..
-	if ( menubar_main .items()[ 0 ] .get_submenu() ->items()[ 1 ] .get_submenu() )
+	/*TODO ugly */
+	//update radiobuttons..
+	if ( menu_main_items[MENU_DEVICES] ->has_submenu() )
 		static_cast<Gtk::RadioMenuItem *>( 
 			menu_main_items[MENU_DEVICES] ->get_submenu() ->get_children()[current_device]) ->set_active( true ) ;
 }
