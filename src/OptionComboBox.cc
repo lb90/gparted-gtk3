@@ -73,12 +73,12 @@ void OptionComboBox::append(const Glib::ustring& text, bool sensitive)
 	row [ m_columns.m_col_sensitive ] = sensitive;
 }
 
-void OptionComboBox::erase(const Row& row)
+void OptionComboBox::remove(const Row& row)
 {
 	if (row.m_parent != this)
 		return;
 	
-	m_model->
+	m_model ->erase( row.m_iter );
 }
 
 std::vector<OptionComboBox::Row> OptionComboBox::items()
@@ -100,7 +100,7 @@ std::vector<OptionComboBox::Row> OptionComboBox::items()
 
 void OptionComboBox::clear()
 {
-	m_model.clear();
+	m_model ->clear();
 }
 
 OptionComboBox::Row::Row(OptionComboBox *parent, Gtk::TreeModel::iterator iter)

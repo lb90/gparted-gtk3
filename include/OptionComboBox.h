@@ -49,6 +49,8 @@ public:
 	private:
 		Gtk::TreeModel::iterator m_iter;
 		OptionComboBox *m_parent;
+	
+	friend class OptionComboBox;
 	};
 	friend class Row; /* for pre c++11 */
 
@@ -56,7 +58,7 @@ public:
 	~OptionComboBox();
 
 	void append(const Glib::ustring & text, bool sensitive = true);
-	void erase( const Row & );
+	void remove( const Row & );
 	void clear();
 	
 	std::vector< Row > items();
