@@ -23,7 +23,6 @@
 #include <gtkmm/dialog.h>
 #include <gtkmm/stock.h>
 #include <gtkmm/frame.h>
-#include <gtkmm/table.h>
 #include <gtkmm/entry.h>
 
 #define BORDER 8
