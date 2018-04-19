@@ -72,6 +72,17 @@ Gtk::Label * Utils::mk_label( const Glib::ustring & text
 	return label ;
 }
 
+Gtk::Image * Utils::mk_image_iconname( const Glib::ustring & icon_name,
+                                       Gtk::IconSize size )
+{
+	Gtk::Image * image = manage( new Gtk::Image() );
+	
+	image ->set_from_icon_name( icon_name, size );
+	image ->property_use_fallback() .set_value( true ); /*TODO gtk3: is it a good idea? */
+	
+	return image;
+}
+
 Glib::ustring Utils::num_to_str( Sector number )
 {
 	std::stringstream ss ;

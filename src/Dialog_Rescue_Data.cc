@@ -18,6 +18,7 @@
 #include "Utils.h"
 #include "Dialog_Rescue_Data.h"
 #include "Partition.h"
+#include "Utils.h"
 
 #include <glibmm/shell.h>
 #include <glibmm/stringutils.h>
@@ -87,7 +88,7 @@ void Dialog_Rescue_Data::draw_dialog()
 	info_txt+=_("All mounted views will be unmounted when you close this dialog.");
 
 	Gtk::HBox *infoBox=manage(new Gtk::HBox());
-	Gtk::Image *infoImg=manage(new Gtk::Image( Gtk::Stock::DIALOG_INFO, Gtk::ICON_SIZE_DIALOG));
+	Gtk::Image *infoImg=Utils::mk_image_iconname( "dialog-information", Gtk::ICON_SIZE_DIALOG);
 	Gtk::Label *infoLabel= manage(new Gtk::Label (info_txt));
 
 	infoBox->pack_start(*infoImg, Gtk::PACK_SHRINK, 5);

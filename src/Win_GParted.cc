@@ -150,7 +150,7 @@ void Win_GParted::init_menubar()
 	//fill menubar_main and connect callbacks 
 	//gparted
 	menu = Gtk::manage( new Gtk::Menu() ) ;
-	image = Gtk::manage( new Gtk::Image( Gtk::Stock::REFRESH, Gtk::ICON_SIZE_MENU ) );
+	image = Utils::mk_image_iconname( "view-refresh", Gtk::ICON_SIZE_MENU ) ;
 	item = Gtk::manage( new GParted::Menu_Helpers::ImageMenuElem(
 		_("_Refresh Devices"),
 		Gtk::AccelKey("<control>r"),
@@ -158,7 +158,7 @@ void Win_GParted::init_menubar()
 		sigc::mem_fun(*this, &Win_GParted::menu_gparted_refresh_devices) ) );
 	menu ->append( * item) ;
 	
-	image = Gtk::manage( new Gtk::Image( Gtk::Stock::HARDDISK, Gtk::ICON_SIZE_MENU ) );
+	image = Utils::mk_image_iconname( "drive-harddisk", Gtk::ICON_SIZE_MENU ) ;
 	item = Gtk::manage( new GParted::Menu_Helpers::ImageMenuElem( _("_Devices"), *image ) ) ;
 	menu ->append( * item );
 	menu_main_items[ MENU_DEVICES ] = item;
@@ -178,14 +178,14 @@ void Win_GParted::init_menubar()
 	item = Gtk::manage( new GParted::Menu_Helpers::ImageMenuElem( 
 		_("_Undo Last Operation"), 
 		Gtk::AccelKey("<control>z"),
-		* Gtk::manage( new Gtk::Image( Gtk::Stock::UNDO, Gtk::ICON_SIZE_MENU ) ), 
+		* Utils::mk_image_iconname( "edit-undo", Gtk::ICON_SIZE_MENU ), 
 		sigc::mem_fun(*this, &Win_GParted::activate_undo) ) );
 	menu ->append( * item );
 	menu_main_items[ MENU_UNDO_LAST_OPERATION ] = item;
 
 	item = Gtk::manage( new GParted::Menu_Helpers::ImageMenuElem( 
 		_("_Clear All Operations"), 
-		* Gtk::manage( new Gtk::Image( Gtk::Stock::CLEAR, Gtk::ICON_SIZE_MENU ) ), 
+		* Utils::mk_image_iconname( "edit-clear", Gtk::ICON_SIZE_MENU ), 
 		sigc::mem_fun(*this, &Win_GParted::clear_operationslist) ) );
 	menu ->append( * item );
 	menu_main_items[ MENU_CLEAR_OPERATIONS ] = item;
@@ -193,7 +193,7 @@ void Win_GParted::init_menubar()
 	item = Gtk::manage( new GParted::Menu_Helpers::ImageMenuElem( 
 		_("_Apply All Operations"),
 		Gtk::AccelKey(GDK_KEY_Return, Gdk::CONTROL_MASK),
-		* Gtk::manage( new Gtk::Image( Gtk::Stock::APPLY, Gtk::ICON_SIZE_MENU ) ), 
+		* Gtk::manage( new Gtk::Image( Gtk::Stock::APPLY, Gtk::ICON_SIZE_MENU ) ), /*TODO*/
 		sigc::mem_fun(*this, &Win_GParted::activate_apply) ) );
 	menu ->append( * item );
 	menu_main_items[ MENU_APPLY_OPERATIONS ] = item;
@@ -247,7 +247,7 @@ void Win_GParted::init_menubar()
 	item = Gtk::manage( new GParted::Menu_Helpers::ImageMenuElem( 
 		_("_Contents"), 
 		Gtk::AccelKey("F1"),
-		* Gtk::manage( new Gtk::Image( Gtk::Stock::HELP, Gtk::ICON_SIZE_MENU ) ), 
+		* Utils::mk_image_iconname( "help-browser", Gtk::ICON_SIZE_MENU ), 
 		sigc::mem_fun(*this, &Win_GParted::menu_help_contents) ) );
 	menu ->append( * item );
 	
@@ -269,7 +269,7 @@ void Win_GParted::init_toolbar()
 	hbox_toolbar.pack_start( toolbar_main );
 	
 	//NEW and DELETE
-	image = Gtk::manage( new Gtk::Image( Gtk::Stock::NEW, Gtk::ICON_SIZE_BUTTON ) );
+	image = Utils::mk_image_iconname( "document-new", Gtk::ICON_SIZE_BUTTON ) ;
 	/*TO TRANSLATORS: "New" is a tool bar item for partition actions. */
 	Glib::ustring str_temp = _("New") ;
 	toolbutton = Gtk::manage(new Gtk::ToolButton( *image, str_temp ));
@@ -286,7 +286,7 @@ void Win_GParted::init_toolbar()
 	index++ ;
 	
 	//RESIZE/MOVE
-	image = Gtk::manage( new Gtk::Image( Gtk::Stock::GOTO_LAST, Gtk::ICON_SIZE_BUTTON ) );
+	image = Utils::mk_image_iconname( "go-last", Gtk::ICON_SIZE_BUTTON ) ;
 	str_temp = _("Resize/Move") ;
 	//Condition string split and Undo button.
 	//  for longer translated string, split string in two and skip the Undo button to permit full toolbar to display
@@ -358,11 +358,10 @@ void Win_GParted::init_partition_menu()
 	Gtk::MenuItem *item;
 	//fill menu_partition
 	/*TO TRANSLATORS: "_New" is a sub menu item for the partition menu. */
-	image = Gtk::manage( new Gtk::Image( Gtk::Stock::NEW, Gtk::ICON_SIZE_MENU ) );
 	item = Gtk::manage( new GParted::Menu_Helpers::ImageMenuElem(
 	                      _("_New"),
 	                      Gtk::AccelKey( GDK_KEY_Insert, Gdk::BUTTON1_MASK),
-	                      * image,
+	                      * Utils::mk_image_iconname( "document-new", Gtk::ICON_SIZE_MENU ),
 	                      sigc::mem_fun(*this, &Win_GParted::activate_new) ) );
 	menu_partition .append( * item );
 
@@ -378,11 +377,10 @@ void Win_GParted::init_partition_menu()
 
 	item = Gtk::manage( new GParted::Menu_Helpers::SeparatorElem() );
 	menu_partition .append( * item );
-	
-	image = Gtk::manage( new Gtk::Image( Gtk::Stock::GOTO_LAST, Gtk::ICON_SIZE_MENU ) );
+
 	item = Gtk::manage( new GParted::Menu_Helpers::ImageMenuElem(
 	                      _("_Resize/Move"), 
-	                      * image, 
+	                      * Utils::mk_image_iconname( "go-last", Gtk::ICON_SIZE_MENU ), 
 	                      sigc::mem_fun(*this, &Win_GParted::activate_resize) ) );
 	menu_partition .append( * item );
 			
@@ -409,7 +407,7 @@ void Win_GParted::init_partition_menu()
 	menu_partition .append( * item );
 	
 	/*TO TRANSLATORS: menuitem which holds a submenu with file systems.. */
-	image = Gtk::manage( new Gtk::Image( Gtk::Stock::CONVERT, Gtk::ICON_SIZE_MENU ) );
+	image = Gtk::manage( new Gtk::Image( Gtk::Stock::CONVERT, Gtk::ICON_SIZE_MENU ) ); /*TODO*/
 	item = Gtk::manage( new GParted::Menu_Helpers::ImageMenuElem(
 	                      _("_Format to"),
 	                      * image,

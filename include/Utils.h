@@ -27,6 +27,7 @@
 #include "i18n.h"
 
 #include <gtkmm/label.h>
+#include <gtkmm/image.h>
 #include <glibmm/ustring.h>
 #include <glibmm/spawn.h>
 
@@ -134,6 +135,7 @@ public:
 	                            , bool selectable = false
 	                            , float yalign = 0.5 /* ALIGN_CENTER */
 	                            ) ;
+	static Gtk::Image* mk_image_iconname( const Glib::ustring & icon_name, Gtk::IconSize size );
 	static Glib::ustring num_to_str( Sector number ) ;
 	static Glib::ustring get_color( FSType filesystem );
 	static Glib::RefPtr<Gdk::Pixbuf> get_color_as_pixbuf( FSType filesystem, int width, int height );
