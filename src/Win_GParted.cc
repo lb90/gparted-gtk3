@@ -3234,16 +3234,31 @@ bool Win_GParted::remove_non_empty_lvm2_pv_dialog( const OperationType optype )
         grid ->set_column_spacing( 10 ) ;
         msg_area ->pack_start( * grid ) ;
 
+	Gtk::Widget *widget;
+
 	//Volume Group
-	grid ->attach( * Utils::mk_label( "<b>" + Glib::ustring( vgname_label ) + "</b>" ),
-	                0, 0, 1, 1) ; /*TODO sono tutti fill */
-	grid ->attach( * Utils::mk_label( vgname, true, false, true ),
-	                1, 0, 1, 1) ;
+	widget = Utils::mk_label( "<b>" + Glib::ustring( vgname_label ) + "</b>" ) ;
+	widget ->set_hexpand( true );
+	widget ->set_halign( Gtk::ALIGN_FILL );
+	grid ->attach( * widget,
+	               0, 0,
+	               1, 1) ;
+
+	widget = Utils::mk_label( vgname, true, false, true ) ;
+	widget ->set_hexpand( true );
+	widget ->set_halign( Gtk::ALIGN_FILL );
+	grid ->attach( * widget,
+	               1, 0,
+	               1, 1) ;
 
 	//Members
-	grid ->attach( * Utils::mk_label( "<b>" + Glib::ustring( members_label ) + "</b>",
-	                                   true, false, false, 0.0 /* ALIGN_TOP */ ),
-	                0, 1, 1, 1) ;
+	widget = Utils::mk_label( "<b>" + Glib::ustring( members_label ) + "</b>",
+	                          true, false, false, 0.0 /* ALIGN_TOP */ ) ;
+	widget ->set_hexpand( true );
+	widget ->set_halign( Gtk::ALIGN_FILL );
+	grid ->attach( * widget,
+	               0, 1,
+	               1, 1) ;
 
 	Glib::ustring members_str = "" ;
 	if ( ! members .empty() )
@@ -3255,8 +3270,12 @@ bool Win_GParted::remove_non_empty_lvm2_pv_dialog( const OperationType optype )
 			members_str += members[i] ;
 		}
 	}
-	grid ->attach( * Utils::mk_label( members_str, true, false, true, 0.0 /* ALIGN_TOP */ ),
-	                1, 1, 1, 1) ;
+	widget = Utils::mk_label( members_str, true, false, true, 0.0 /* ALIGN_TOP */ ) ;
+	widget ->set_hexpand( true );
+	widget ->set_halign( Gtk::ALIGN_FILL );
+	grid ->attach( * widget,
+	               1, 1,
+	               1, 1) ;
 
 	dialog .add_button( Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL );
 	dialog .add_button( Gtk::Stock::DELETE, Gtk::RESPONSE_OK );
