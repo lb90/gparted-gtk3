@@ -1,7 +1,7 @@
 GPARTED
 =======
 ### Status
-[![Build Status](https://travis-ci.org/lb90/gparted-gtk3.svg?branch=travis-ci)](https://travis-ci.org/lb90/gparted-gtk3)
+[![Build Status](https://travis-ci.org/lb90/gparted-gtk3.svg?branch=gparted-gtk3-github)](https://travis-ci.org/lb90/gparted-gtk3)
 
 Gparted is the GNOME Partition Editor for creating, reorganizing, and
 deleting disk partitions.
