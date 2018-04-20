@@ -1,0 +1,25 @@
+language: c++
+compiler: gcc
+dist: trusty
+
+addons:
+  apt:
+    packages:
+    - e2fsprogs
+    - uuid
+    - uuid-dev
+    - gnome-common
+    - libparted-dev
+    - libgtkmm-3.0-dev
+    - libdevmapper-dev
+
+git:
+  depth: 1
+
+branches:
+  only:
+    - travis-ci
+
+script:
+ - ./autogen.sh
+ - make
