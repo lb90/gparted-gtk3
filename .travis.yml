@@ -12,6 +12,8 @@ addons:
     - libparted-dev
     - libgtkmm-3.0-dev
     - libdevmapper-dev
+    - gnome-doc-utils
+    - docbook-xml
 
 git:
   depth: 1
