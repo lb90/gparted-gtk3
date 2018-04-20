@@ -17,6 +17,8 @@
 #include "Dialog_Partition_Name.h"
 #include "Partition.h"
 
+#include <gtkmm/grid.h>
+
 namespace GParted
 {
 
@@ -29,18 +31,15 @@ Dialog_Partition_Name::Dialog_Partition_Name( const Partition & partition, int m
 	this->set_title( String::ucompose( _("Set partition name on %1"), partition.get_path() ) );
 
 	{
-		int top = 0, bottom = 1;
+		// Create grid to hold name and entry box
+		Gtk::Grid *grid( manage( new Gtk::Grid() ) );
 
-		// Create table to hold name and entry box
-		Gtk::Table *table( manage( new Gtk::Table() ) );
-
-		table->set_border_width( 5 );
-		table->set_col_spacings( 10 );
-		get_vbox()->pack_start( *table, Gtk::PACK_SHRINK );
-		table->attach( *Utils::mk_label( "<b>" + Glib::ustring(_("Name:")) + "</b>" ),
-		               0, 1,
-		               top, bottom,
-		               Gtk::FILL );
+		grid->set_border_width( 5 );
+		grid->set_column_spacing( 10 );
+		get_vbox()->pack_start( *grid, Gtk::PACK_SHRINK );
+		grid->attach( *Utils::mk_label( "<b>" + Glib::ustring(_("Name:")) + "</b>" ),
+		               0, 0,
+		               1, 1);
 		// Create text entry box
 		entry = manage( new Gtk::Entry() );
 
@@ -54,11 +53,10 @@ Dialog_Partition_Name::Dialog_Partition_Name( const Partition & partition, int m
 		entry->set_activates_default( true );
 		entry->set_text( partition.name );
 		entry->select_region( 0, entry->get_text_length() );
-		// Add entry box to table
-		table->attach( *entry,
-		               1, 2,
-		               top++, bottom++,
-		               Gtk::FILL );
+		// Add entry box to grid
+		grid->attach( *entry,
+		               1, 0,
+		               1, 1);
 	}
 
 	this->add_button( Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL );

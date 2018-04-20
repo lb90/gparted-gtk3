@@ -22,7 +22,6 @@
 
 #include <gtkmm/dialog.h>
 #include <gtkmm/stock.h>
-#include <gtkmm/table.h>
 #include <gtkmm/entry.h>
 
 namespace GParted

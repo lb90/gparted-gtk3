@@ -17,6 +17,8 @@
 #include "Dialog_FileSystem_Label.h"
 #include "Partition.h"
 
+#include <gtkmm/grid.h>
+
 namespace GParted
 {
 
@@ -29,18 +31,15 @@ Dialog_FileSystem_Label::Dialog_FileSystem_Label( const Partition & partition )
 	this->set_title( String::ucompose( _("Set file system label on %1"), partition.get_path() ) );
 
 	{
-		int top = 0, bottom = 1;
+		//Create grid to hold Label and entry box
+		Gtk::Grid* grid(manage(new Gtk::Grid()));
 
-		//Create table to hold Label and entry box
-		Gtk::Table* table(manage(new Gtk::Table()));
-
-		table->set_border_width(5);
-		table->set_col_spacings(10);
-		get_vbox()->pack_start(*table, Gtk::PACK_SHRINK);
-		table->attach(*Utils::mk_label("<b>" + Glib::ustring(_("Label:")) + "</b>"),
-				0, 1,
-				top, bottom,
-				Gtk::FILL);
+		grid->set_border_width(5);
+		grid->set_column_spacing(10);
+		get_vbox()->pack_start(*grid, Gtk::PACK_SHRINK);
+		grid->attach(*Utils::mk_label("<b>" + Glib::ustring(_("Label:")) + "</b>"),
+				0, 0,
+				1, 1);
 		//Create Text entry box
 		entry = manage(new Gtk::Entry());
 		entry->set_max_length( Utils::get_filesystem_label_maxlength( partition.filesystem ) ) ;
@@ -48,11 +47,10 @@ Dialog_FileSystem_Label::Dialog_FileSystem_Label( const Partition & partition )
 		entry->set_activates_default(true);
 		entry->set_text(partition.get_filesystem_label());
 		entry->select_region(0, entry ->get_text_length());
-		//Add entry box to table
-		table->attach(*entry,
-				1, 2,
-				top++, bottom++,
-				Gtk::FILL);
+		//Add entry box to grid
+		grid->attach(*entry,
+				1, 0,
+				1, 1);
 	}
 
 	this ->add_button( Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL ) ;
