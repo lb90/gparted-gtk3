@@ -20,7 +20,7 @@ git:
 
 branches:
   only:
-    - travis-ci
+    - gparted-gtk3-github
 
 script:
  - ./autogen.sh
