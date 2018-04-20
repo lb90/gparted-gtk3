@@ -218,10 +218,22 @@ PKG_CHECK_MODULES([GTHREAD], [gthread-2.0])
 AC_SUBST([GTHREAD_LIBS])
 AC_SUBST([GTHREAD_CFLAGS])
 
+
 dnl GTKMM
 PKG_CHECK_MODULES([GTKMM], [gtkmm-3.0])
 AC_SUBST([GTKMM_LIBS])
 AC_SUBST([GTKMM_CFLAGS])
+
+dnl Check for gtk >= 3.22 to determine availability of gtk_show_uri_on_window().
+AC_MSG_CHECKING([for gtk_show_uri_on_window() function])
+PKG_CHECK_EXISTS(
+	[gtkmm-3.0 >= 3.22.0],
+	[AC_DEFINE([HAVE_GTK_SHOW_URI_ON_WINDOW], 1,
+	           [Define to 1 if gtk provides gtk_show_uri_on_window() function.])
+	 AC_MSG_RESULT([yes])
+	],
+	[AC_MSG_RESULT([no])]
+)
 
 
 dnl Check for glibmm minimum required version.

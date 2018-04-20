@@ -218,7 +218,12 @@ void Dialog_Rescue_Data::open_ro_view(Glib::ustring mountPoint)
 
 	Glib::ustring uri = "file:" + mountPoint ;
 
+#ifdef HAVE_GTK_SHOW_URI_ON_WINDOW
 	gtk_show_uri_on_window( Gtk::Window::gobj(), uri .c_str(), gtk_get_current_event_time(), &error ) ;
+#else
+	GdkScreen *gscreen = gdk_screen_get_default() ; /*TODO why not use get_window() ->get_screen() ->gobj() ? */
+	gtk_show_uri( gscreen, uri .c_str(), gtk_get_current_event_time(), &error ) ;
+#endif /* HAVE_GTK_SHOW_URI_ON_WINDOW */
 
 	if ( error != NULL )
 	{
